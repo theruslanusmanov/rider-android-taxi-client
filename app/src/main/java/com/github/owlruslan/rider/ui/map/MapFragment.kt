@@ -31,6 +31,7 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
 
+        // Add map to fragment
         val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this);
 
