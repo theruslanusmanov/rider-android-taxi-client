@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import javax.inject.Inject
 
-
 class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     @set:Inject var mapFragmentProvider: Lazy<MapFragment>? = null
@@ -36,7 +35,7 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
 
         // Add MapFragment to activity
         var mapFragment = supportFragmentManager.findFragmentById(R.id.fragment_map)
-        if (mapFragment  == null) {
+        if (mapFragment == null) {
             mapFragment = mapFragmentProvider!!.get()
             supportFragmentManager.beginTransaction().add(
                 R.id.content_frame, mapFragment!!).commit()

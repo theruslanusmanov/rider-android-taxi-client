@@ -34,6 +34,7 @@ ext {
     legacySupportVersion = '1.0.0'
     materialVersion = '1.1.0-alpha03'
     constraintLayoutVersion = '1.1.3'
+    gmapsVersion = '16.1.0'
     junitVersion = '4.12'
     runnerVersion = '1.1.2-alpha01'
     espressoVersion = '3.1.2-alpha01'
