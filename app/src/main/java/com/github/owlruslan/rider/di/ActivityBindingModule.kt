@@ -1,7 +1,7 @@
 package com.github.owlruslan.rider.di
 
-import com.github.owlruslan.rider.components.main.MainActivity
-import com.github.owlruslan.rider.components.main.MainModule
+import com.github.owlruslan.rider.ui.MainActivity
+import com.github.owlruslan.rider.ui.map.MapModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -14,7 +14,8 @@ import dagger.android.ContributesAndroidInjector
  */
 @Module
 abstract class ActivityBindingModule {
+
     @ActivityScoped
-    @ContributesAndroidInjector(modules = [MainModule::class])
-    internal abstract fun mainActivity(): MainActivity
+    @ContributesAndroidInjector(modules = [MapModule::class])
+    abstract fun mainActivity(): MainActivity
 }

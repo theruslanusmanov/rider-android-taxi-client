@@ -21,7 +21,10 @@ import javax.inject.Singleton
  */
 @SuppressWarnings("unchecked")
 @Singleton
-@Component(modules = [ApplicationModule::class, ActivityBindingModule::class, AndroidSupportInjectionModule::class])
+@Component(modules = [
+    ApplicationModule::class,
+    ActivityBindingModule::class,
+    AndroidSupportInjectionModule::class])
 interface AppComponent : AndroidInjector<RiderApplication> {
 
     // Gives us syntactic sugar. we can then do DaggerAppComponent.builder().application(this).build().inject(this);
