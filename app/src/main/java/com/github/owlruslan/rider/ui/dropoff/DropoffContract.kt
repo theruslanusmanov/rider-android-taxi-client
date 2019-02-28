@@ -1,17 +1,21 @@
-package com.github.owlruslan.rider.ui.map
+package com.github.owlruslan.rider.ui.dropoff
 
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView
 
-interface MapContract {
+interface DropoffContract {
 
     interface View : BaseView<Presenter> {
 
-        fun showDropoffView()
+        fun hideMenuIcon()
+
+        fun showMapView()
     }
 
     interface Presenter : BasePresenter<View> {
 
-        fun openDropoffView()
+        fun hideMenu()
+
+        fun openMapView()
     }
 }

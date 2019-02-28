@@ -1,19 +1,18 @@
-package com.github.owlruslan.rider.ui.map
+package com.github.owlruslan.rider.ui.dropoff
 
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.di.FragmentScoped
-import com.github.owlruslan.rider.ui.dropoff.DropoffFragment
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class MapModule {
+abstract class DropoffModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun mapFragment(): MapFragment
+    abstract fun dropoffFragment(): DropoffFragment
 
     @ActivityScoped
-    @Binds abstract fun mapPresenter(presenter: MapPresenter): MapContract.Presenter
+    @Binds abstract fun dropoffPresenter(presenter: DropoffPresenter): DropoffContract.Presenter
 }

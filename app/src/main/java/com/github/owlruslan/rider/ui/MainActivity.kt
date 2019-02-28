@@ -34,12 +34,11 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         nav_view.setNavigationItemSelectedListener(this)
 
         // Add MapFragment to activity
-        var mapFragment = supportFragmentManager.findFragmentById(R.id.fragment_map)
-        if (mapFragment == null) {
-            mapFragment = mapFragmentProvider!!.get()
-            supportFragmentManager.beginTransaction().add(
-                R.id.content_frame, mapFragment!!).commit()
-        }
+        val mapFragment = mapFragmentProvider!!.get()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame, mapFragment)
+            .commit()
+
     }
 
     override fun onBackPressed() {

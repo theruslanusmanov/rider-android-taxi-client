@@ -51,7 +51,7 @@
             <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:layout_margin="24dp"
-                    app:cardCornerRadius="36dp" app:cardElevation="4dp">
+                    app:cardCornerRadius="36dp" app:cardElevation="4dp" android:id="@+id/bottomDestinationCardView">
 
                 <LinearLayout
                         android:orientation="horizontal"
@@ -75,6 +75,30 @@
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_marginLeft="32dp"
+                    android:layout_marginRight="32dp" android:layout_marginBottom="16dp">
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:clickable="true" app:srcCompat="@drawable/ic_home"
+                            android:id="@+id/floatingActionButton" android:layout_marginRight="8dp"
+                            app:fabSize="mini" app:backgroundTint="@color/colorAccent" app:elevation="0dp"/>
+                    <TextView
+                            android:text="Home"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" android:id="@+id/textView5" android:layout_weight="1"
+                            android:fontFamily="@font/roboto_medium" android:textSize="14sp"
+                            android:gravity="center_vertical"/>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
