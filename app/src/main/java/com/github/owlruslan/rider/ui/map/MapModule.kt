@@ -2,7 +2,6 @@ package com.github.owlruslan.rider.ui.map
 
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.di.FragmentScoped
-import com.github.owlruslan.rider.ui.dropoff.DropoffFragment
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector

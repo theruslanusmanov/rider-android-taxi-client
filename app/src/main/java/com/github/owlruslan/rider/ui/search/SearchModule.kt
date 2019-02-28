@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.dropoff
+package com.github.owlruslan.rider.ui.search
 
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.di.FragmentScoped
@@ -7,12 +7,12 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class DropoffModule {
+abstract class SearchModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun dropoffFragment(): DropoffFragment
+    abstract fun dropoffFragment(): SearchFragment
 
     @ActivityScoped
-    @Binds abstract fun dropoffPresenter(presenter: DropoffPresenter): DropoffContract.Presenter
+    @Binds abstract fun dropoffPresenter(presenter: SearchPresenter): SearchContract.Presenter
 }

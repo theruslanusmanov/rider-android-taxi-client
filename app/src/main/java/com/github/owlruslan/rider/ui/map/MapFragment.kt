@@ -1,21 +1,19 @@
 package com.github.owlruslan.rider.ui.map
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.owlruslan.rider.R
 
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.github.owlruslan.rider.ui.dropoff.DropoffFragment
+import com.github.owlruslan.rider.ui.search.SearchFragment
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import dagger.Lazy
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_map.*
 
 @ActivityScoped
@@ -23,7 +21,7 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
 
     @Inject lateinit var presenter: MapContract.Presenter
 
-    @set:Inject var dropoffFragmentProvider: Lazy<DropoffFragment>? = null
+    @set:Inject var searchFragmentProvider: Lazy<SearchFragment>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +48,14 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
 
         // On bottom destination CardView click
         bottomDestinationCardView.setOnClickListener {
-            presenter.openDropoffView()
+            presenter.openSearchView()
         }
     }
 
-    override fun showDropoffView() {
-        val dropoffFragment = dropoffFragmentProvider!!.get()
+    override fun showSearchView() {
+        val dropoffFragment = searchFragmentProvider!!.get()
         activity!!.supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.slide_in_up, 0)
             .replace(R.id.content_frame, dropoffFragment)
             .addToBackStack(null)
             .commit()

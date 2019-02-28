@@ -1,7 +1,6 @@
-package com.github.owlruslan.rider.ui.dropoff
+package com.github.owlruslan.rider.ui.search
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,22 +10,30 @@ import com.github.owlruslan.rider.ui.map.MapFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.Lazy
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_dropoff.*
 import javax.inject.Inject
 
 @ActivityScoped
-class DropoffFragment @Inject constructor() : DaggerFragment(), DropoffContract.View {
+class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View {
 
     @Inject
-    lateinit var presenter: DropoffContract.Presenter
+    lateinit var presenter: SearchContract.Presenter
 
     @set:Inject var mapFragmentProvider: Lazy<MapFragment>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.takeView(this);
+    }
+
+    override fun onResume() {
+        super.onResume()
         presenter.hideMenu()
+    }
+
+    override fun onDestroyView() {
+        presenter.showMenu()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
@@ -50,9 +57,15 @@ class DropoffFragment @Inject constructor() : DaggerFragment(), DropoffContract.
         menu.visibility = View.GONE
     }
 
+    override fun showMenuIcon() {
+        val menu = activity!!.findViewById<FloatingActionButton>(R.id.menu)
+        menu.visibility = View.VISIBLE
+    }
+
     override fun showMapView() {
         val mapFragment = mapFragmentProvider!!.get()
         activity!!.supportFragmentManager.beginTransaction()
+            .setCustomAnimations(0, R.anim.slide_in_down)
             .replace(R.id.content_frame, mapFragment)
             .commit()
     }

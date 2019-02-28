@@ -1,11 +1,7 @@
 package com.github.owlruslan.rider.ui.map
 
-import android.util.Log
-import android.view.View
 import androidx.annotation.Nullable
-import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.github.owlruslan.rider.di.FragmentScoped
 import javax.inject.Inject
 
 @ActivityScoped
@@ -22,7 +18,7 @@ class MapPresenter @Inject constructor() : MapContract.Presenter {
         view = null
     }
 
-    override fun openDropoffView() {
-        view?.showDropoffView()
+    override fun openSearchView() {
+        view?.showSearchView()
     }
 }

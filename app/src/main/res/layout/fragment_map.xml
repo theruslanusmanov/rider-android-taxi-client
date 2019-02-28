@@ -4,7 +4,8 @@
                                                    xmlns:tools="http://schemas.android.com/tools"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
-                                                   android:id="@+id/fragment_map">
+                                                   android:id="@+id/fragment_map"
+                                                   android:background="@android:color/white">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
@@ -56,18 +57,18 @@
                 <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:layout_margin="16dp">
+                        android:layout_height="wrap_content" android:layout_margin="16dp"
+                        android:gravity="center_vertical">
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_search"
                             android:id="@+id/imageView2" android:layout_marginRight="16dp"
                             android:tint="@color/colorPrimary"/>
 
-                    <EditText
+                    <TextView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
-                            android:inputType="textPersonName"
                             android:ems="10"
                             android:id="@+id/editText" android:hint="Enter destintation"
                             android:singleLine="false" android:selectAllOnFocus="false" android:textSize="14sp"

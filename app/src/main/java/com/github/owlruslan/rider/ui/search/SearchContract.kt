@@ -1,13 +1,15 @@
-package com.github.owlruslan.rider.ui.dropoff
+package com.github.owlruslan.rider.ui.search
 
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView
 
-interface DropoffContract {
+interface SearchContract {
 
     interface View : BaseView<Presenter> {
 
         fun hideMenuIcon()
+
+        fun showMenuIcon()
 
         fun showMapView()
     }
@@ -15,6 +17,8 @@ interface DropoffContract {
     interface Presenter : BasePresenter<View> {
 
         fun hideMenu()
+
+        fun showMenu()
 
         fun openMapView()
     }

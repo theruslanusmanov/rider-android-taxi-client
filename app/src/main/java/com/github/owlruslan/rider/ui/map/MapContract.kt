@@ -7,11 +7,11 @@ interface MapContract {
 
     interface View : BaseView<Presenter> {
 
-        fun showDropoffView()
+        fun showSearchView()
     }
 
     interface Presenter : BasePresenter<View> {
 
-        fun openDropoffView()
+        fun openSearchView()
     }
 }

@@ -1,16 +1,15 @@
-package com.github.owlruslan.rider.ui.dropoff
+package com.github.owlruslan.rider.ui.search
 
-import android.util.Log
 import androidx.annotation.Nullable
 import com.github.owlruslan.rider.di.ActivityScoped
 import javax.inject.Inject
 
 @ActivityScoped
-class DropoffPresenter @Inject constructor() : DropoffContract.Presenter {
+class SearchPresenter @Inject constructor() : SearchContract.Presenter {
 
-    @Nullable private var view: DropoffContract.View? = null
+    @Nullable private var view: SearchContract.View? = null
 
-    override fun takeView(view: DropoffContract.View) {
+    override fun takeView(view: SearchContract.View) {
         this.view = view
     }
 
@@ -20,6 +19,10 @@ class DropoffPresenter @Inject constructor() : DropoffContract.Presenter {
 
     override fun hideMenu() {
         view?.hideMenuIcon()
+    }
+
+    override fun showMenu() {
+        view?.showMenuIcon()
     }
 
     override fun openMapView() {
