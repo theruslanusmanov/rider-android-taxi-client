@@ -53,10 +53,10 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
     }
 
     override fun showSearchView() {
-        val dropoffFragment = searchFragmentProvider!!.get()
+        val searchFragment = searchFragmentProvider!!.get()
         activity!!.supportFragmentManager.beginTransaction()
             .setCustomAnimations(R.anim.slide_in_up, 0)
-            .replace(R.id.content_frame, dropoffFragment)
+            .replace(R.id.content_frame, searchFragment)
             .addToBackStack(null)
             .commit()
     }

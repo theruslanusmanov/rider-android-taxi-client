@@ -8,33 +8,37 @@
                                                    android:paddingLeft="16dp" android:paddingRight="16dp"
                                                    android:background="@android:color/white">
 
-    <TextView
-            android:text="Cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/btnCancel"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:fontFamily="@font/roboto_medium" android:layout_marginTop="4dp" android:layout_marginStart="8dp"
-            android:textColor="@color/colorPrimary"/>
-    <TextView
-            android:text="Drop-off"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/textView2" android:textSize="18sp"
-            android:textStyle="bold" android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:textColor="@android:color/black"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" android:fontFamily="@font/roboto_black"
-    />
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp"
+            android:id="@+id/constraintLayout">
+
+        <TextView
+                android:text="Cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/btnCancel"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:fontFamily="@font/roboto_black"
+                android:textColor="@android:color/black" android:textStyle="bold" android:textSize="14sp"
+                android:drawableLeft="@drawable/ic_clear" android:gravity="center_vertical"/>
+        <TextView
+                android:text="Done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/btnDone" app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp" android:fontFamily="@font/roboto_black" android:textSize="14sp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:cardElevation="4dp" app:cardCornerRadius="8dp" app:contentPadding="8dp" android:id="@+id/cardView3">
+            app:cardElevation="4dp" app:cardCornerRadius="8dp" app:contentPadding="8dp" android:id="@+id/cardView3"
+            android:layout_marginTop="24dp" app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <LinearLayout
                 android:orientation="vertical"
@@ -54,16 +58,15 @@
                         android:layout_height="wrap_content" android:id="@+id/textView6"
                         android:textSize="12sp" android:fontFamily="@font/roboto_medium"
                         android:textAlignment="textEnd" android:layout_marginRight="@dimen/activity_horizontal_margin"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@color/colorPrimary"/>
 
                 <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
                         android:background="@null"
-                        android:textColorHint="@color/colorPrimary"
                         android:ems="10"
-                        android:id="@+id/editText4" android:hint="Current location" android:textSize="14sp"
+                        android:id="@+id/inputStartPoint" android:hint="Current location" android:textSize="14sp"
                         android:fontFamily="@font/roboto_medium"/>
 
             </LinearLayout>
@@ -81,7 +84,7 @@
                         android:layout_height="wrap_content" android:id="@+id/textView7"
                         android:textSize="12sp" android:fontFamily="@font/roboto_medium"
                         android:textAlignment="textEnd" android:layout_marginRight="@dimen/activity_horizontal_margin"
-                        android:textColor="@android:color/black"/>
+                        android:textColor="@color/colorAccent"/>
 
                 <EditText
                         android:layout_width="match_parent"
@@ -89,7 +92,7 @@
                         android:inputType="textPersonName"
                         android:background="@null"
                         android:ems="10"
-                        android:id="@+id/editText5" android:hint="Search destination" android:textSize="14sp"
+                        android:id="@+id/inputEndPoint" android:hint="Search destination" android:textSize="14sp"
                         android:fontFamily="@font/roboto_medium" android:drawableEnd="@drawable/ic_add"
                 />
 
@@ -100,12 +103,13 @@
     </androidx.cardview.widget.CardView>
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             app:layout_constraintTop_toBottomOf="@+id/cardView3"
-            android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent">
+            android:layout_marginStart="16dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginEnd="16dp" app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/quickPlacesLayout">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -125,5 +129,13 @@
                     android:gravity="center_vertical"/>
         </LinearLayout>
     </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/cardView3" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/searchRecyclerView"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,9 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
+        <!-- To fix bug Failed resolution of: Lorg/apache/http/ProtocolVersion; -->
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -30,6 +33,7 @@
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="@string/google_maps_key"/>
+
         <meta-data android:name="preloaded_fonts" android:resource="@array/preloaded_fonts"/>
 
         <activity

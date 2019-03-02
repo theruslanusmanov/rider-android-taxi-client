@@ -33,9 +33,14 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
     implementation "androidx.core:core-ktx:$rootProject.corektxVersion"
     implementation "androidx.legacy:legacy-support-v4:$rootProject.legacySupportVersion"
-    implementation "com.google.android.material:material:$rootProject.materialVersion"
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha02'
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
-    implementation "com.google.android.gms:play-services-maps:$rootProject.gmapsVersion"
+    implementation "com.google.android.material:material:$rootProject.materialVersion"
+    implementation 'com.google.guava:guava:27.0.1-android'
+    implementation "com.google.android.gms:play-services-maps:$rootProject.playServicesVersion"
+    implementation "com.google.android.gms:play-services-places:$rootProject.playServicesVersion"
+    implementation "com.google.android.libraries.places:places:$rootProject.placesVersion"
     testImplementation "junit:junit:$rootProject.junitVersion"
     androidTestImplementation "androidx.test:runner:$rootProject.runnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
@@ -48,6 +53,4 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
-    implementation 'androidx.cardview:cardview:1.0.0'
-
 }
