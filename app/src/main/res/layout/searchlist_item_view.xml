@@ -14,7 +14,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:clickable="true" app:srcCompat="@drawable/ic_place"
-                android:id="@+id/floatingActionButton" android:layout_marginRight="8dp"
+                android:id="@+id/icon" android:layout_marginRight="8dp"
                 app:fabSize="mini" app:backgroundTint="@color/colorAccent" app:elevation="0dp"/>
         <LinearLayout
                 android:orientation="vertical"

@@ -4,7 +4,7 @@
                                                    xmlns:tools="http://schemas.android.com/tools"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
-                                                   android:id="@+id/fragment_dropoff" android:paddingTop="32dp"
+                                                   android:id="@+id/fragment_passanger_search" android:paddingTop="32dp"
                                                    android:paddingLeft="16dp" android:paddingRight="16dp"
                                                    android:background="@android:color/white">
 

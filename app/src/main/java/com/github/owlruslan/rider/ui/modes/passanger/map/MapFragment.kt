@@ -1,20 +1,29 @@
-package com.github.owlruslan.rider.ui.map
+package com.github.owlruslan.rider.ui.modes.passanger.map
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.github.owlruslan.rider.R
 
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.github.owlruslan.rider.ui.search.SearchFragment
+import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import dagger.Lazy
-import kotlinx.android.synthetic.main.fragment_map.*
+import kotlinx.android.synthetic.main.fragment_passanger_map.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.LatLng
+
+
 
 @ActivityScoped
 class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, OnMapReadyCallback {
@@ -34,7 +43,7 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_map, container, false)
+        val view = inflater.inflate(R.layout.fragment_passanger_map, container, false)
 
         // Add map to fragment
         val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
@@ -61,5 +70,24 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
             .commit()
     }
 
-    override fun onMapReady(map: GoogleMap?) { }
+    override fun onMapReady(map: GoogleMap) {
+        if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+            map.isMyLocationEnabled = true
+        } else {
+            Toast.makeText(context, "You have to accept to enjoy all app's services!", Toast.LENGTH_LONG).show();
+            if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+                map.isMyLocationEnabled = true
+            }
+        }
+
+        val sydney = LatLng(-34.0, 151.0)
+        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        map.setOnMapClickListener(GoogleMap.OnMapClickListener { latLng ->
+            map.addMarker(MarkerOptions().position(latLng).title("from onMapClick"))
+            map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        })
+    }
 }

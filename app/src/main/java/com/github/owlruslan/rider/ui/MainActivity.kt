@@ -8,7 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import com.github.owlruslan.rider.R
-import com.github.owlruslan.rider.ui.map.MapFragment
+import com.github.owlruslan.rider.ui.modes.passanger.map.MapFragment
 import dagger.Lazy
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -78,12 +78,6 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
 
             }
             R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
 
             }
         }

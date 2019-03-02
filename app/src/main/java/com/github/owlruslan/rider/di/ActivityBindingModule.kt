@@ -1,8 +1,9 @@
 package com.github.owlruslan.rider.di
 
 import com.github.owlruslan.rider.ui.MainActivity
-import com.github.owlruslan.rider.ui.search.SearchModule
-import com.github.owlruslan.rider.ui.map.MapModule
+import com.github.owlruslan.rider.ui.modes.passanger.search.SearchModule
+import com.github.owlruslan.rider.ui.modes.passanger.map.MapModule
+import com.github.owlruslan.rider.ui.modes.passanger.ride.RideModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -20,7 +21,8 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(
         modules = [
             MapModule::class,
-            SearchModule::class
+            SearchModule::class,
+            RideModule::class
         ]
     )
     abstract fun mainActivity(): MainActivity

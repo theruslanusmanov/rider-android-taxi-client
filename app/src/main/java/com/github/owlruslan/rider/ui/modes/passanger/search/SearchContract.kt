@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.search
+package com.github.owlruslan.rider.ui.modes.passanger.search
 
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView
@@ -18,11 +18,15 @@ interface SearchContract {
 
         fun createPlacesInstance()
 
-        fun showSearchList(dataset: ArrayList<AutocompletePrediction>)
+        fun showSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes)
 
         fun hideQuickPlacesLayout()
 
         fun showQuickPlacesLayout()
+
+        fun clearFields()
+
+        fun showRideView()
     }
 
     interface Presenter : BasePresenter<View> {
@@ -35,12 +39,14 @@ interface SearchContract {
 
         fun initPlaces()
 
-        fun addSearchList(dataset: ArrayList<AutocompletePrediction>)
+        fun addSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes)
 
         fun hideQuickPlaces()
 
         fun showQuickPlaces()
 
-        fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken)
+        fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken, type: SearchListTypes)
+
+        fun openRideView()
     }
 }

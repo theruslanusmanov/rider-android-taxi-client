@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.search
+package com.github.owlruslan.rider.ui.modes.passanger.map
 
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.di.FragmentScoped
@@ -7,12 +7,12 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class SearchModule {
+abstract class MapModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun searchFragment(): SearchFragment
+    abstract fun mapFragment(): MapFragment
 
     @ActivityScoped
-    @Binds abstract fun searchPresenter(presenter: SearchPresenter): SearchContract.Presenter
+    @Binds abstract fun mapPresenter(presenter: MapPresenter): MapContract.Presenter
 }

@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.search
+package com.github.owlruslan.rider.ui.modes.passanger.search
 
 import android.util.Log
 import androidx.annotation.Nullable
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @ActivityScoped
 class SearchPresenter @Inject constructor() : SearchContract.Presenter {
 
-    @Nullable private var view: SearchContract.View? = null
+    private var view: SearchContract.View? = null
 
     override fun takeView(view: SearchContract.View) {
         this.view = view
@@ -33,6 +33,7 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
     }
 
     override fun openMapView() {
+        view?.clearFields()
         view?.showMapView()
     }
 
@@ -40,8 +41,8 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
         view?.createPlacesInstance()
     }
 
-    override fun addSearchList(dataset: ArrayList<AutocompletePrediction>) {
-        view?.showSearchList(dataset)
+    override fun addSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes) {
+        view?.showSearchList(dataset, type)
     }
 
     override fun hideQuickPlaces() {
@@ -52,7 +53,7 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
         view?.showQuickPlacesLayout()
     }
 
-    override fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken) {
+    override fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken, type: SearchListTypes) {
         val request = FindAutocompletePredictionsRequest.builder()
             //.setLocationRestriction(bounds)
             .setCountry("au")
@@ -63,12 +64,16 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
 
         placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
             val predictions = ArrayList<AutocompletePrediction>(response.autocompletePredictions)
-            this.addSearchList(predictions)
+            this.addSearchList(predictions, type)
         }.addOnFailureListener { exception ->
             if (exception is ApiException) {
                 Log.e(SearchFragment.TAG, "Place not found: " + exception.statusCode)
                 Log.e(SearchFragment.TAG, "Place not found: " + exception.message)
             }
         }
+    }
+
+    override fun openRideView() {
+        view?.showRideView()
     }
 }

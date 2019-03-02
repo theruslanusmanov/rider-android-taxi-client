@@ -1,7 +1,7 @@
-package com.github.owlruslan.rider.ui.search
+package com.github.owlruslan.rider.ui.modes.passanger.search
 
 import android.os.Bundle
-import android.util.Log
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,29 +9,35 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.github.owlruslan.rider.ui.map.MapFragment
-import com.google.android.gms.common.api.ApiException
+import com.github.owlruslan.rider.ui.modes.passanger.map.MapFragment
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.model.TypeFilter
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.Lazy
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.fragment_passanger_search.*
 import javax.inject.Inject
+import android.preference.PreferenceManager
+import com.github.owlruslan.rider.ui.modes.passanger.ride.RideFragment
+
 
 @ActivityScoped
-class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View {
+class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnSearchListClickListener {
 
     @Inject
     lateinit var presenter: SearchContract.Presenter
 
-    @set:Inject var mapFragmentProvider: Lazy<MapFragment>? = null
+    @set:Inject
+    var mapFragmentProvider: Lazy<MapFragment>? = null
+
+    @set:Inject
+    var rideFragmentProvider: Lazy<RideFragment>? = null
 
     private lateinit var placesClient: PlacesClient
+    private lateinit var startPointTextWatcher: TextWatcher
+    private lateinit var endPointTextWatcher: TextWatcher
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +56,12 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onDestroy() {
-        presenter.dropView();  // prevent leaking activity in
+        presenter.dropView()  // prevent leaking activity in
         super.onDestroy()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        return inflater.inflate(R.layout.fragment_passanger_search, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,14 +72,19 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
             presenter.openMapView()
         }
 
-        // Start input
-        inputStartPoint.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) presenter.hideQuickPlaces()
-                else presenter.showQuickPlaces()
+        // Done button
+        btnDone.setOnClickListener {
+            presenter.openRideView()
         }
 
-        inputStartPoint.doOnTextChanged { text, _, _, _ ->
-                presenter.startSearch(text.toString(), placesClient, AUTOCOMPLETE_SESSION_TOKEN)
+        // Start input
+        inputStartPoint.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) presenter.hideQuickPlaces()
+            else presenter.showQuickPlaces()
+        }
+
+        startPointTextWatcher =  inputStartPoint.doOnTextChanged { text, _, _, _ ->
+            presenter.startSearch(text.toString(), placesClient, AUTOCOMPLETE_SESSION_TOKEN, SearchListTypes.START)
         }
 
         // End input
@@ -82,8 +93,8 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
             else presenter.showQuickPlaces()
         }
 
-        inputEndPoint.doOnTextChanged { text, _, _, _ ->
-            presenter.startSearch(text.toString(), placesClient, AUTOCOMPLETE_SESSION_TOKEN)
+        endPointTextWatcher = inputEndPoint.doOnTextChanged { text, _, _, _ ->
+            presenter.startSearch(text.toString(), placesClient, AUTOCOMPLETE_SESSION_TOKEN, SearchListTypes.END)
         }
     }
 
@@ -108,16 +119,16 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     override fun createPlacesInstance() {
         // Create a new Places client instance.
         if (!Places.isInitialized()) {
-            Places.initialize(context!!, context!!.getString(R.string.GOOGLE_MAPS_API_KEY));
+            Places.initialize(context!!, context!!.getString(R.string.GOOGLE_MAPS_API_KEY))
             placesClient = Places.createClient(context!!)
         }
     }
 
-    override fun showSearchList(dataset: ArrayList<AutocompletePrediction>) {
+    override fun showSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes) {
         searchRecyclerView.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = SearchListAdapter(dataset)
+            adapter = SearchListAdapter(dataset, this@SearchFragment, type, context)
         }
     }
 
@@ -129,8 +140,43 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         quickPlacesLayout.visibility = View.VISIBLE
     }
 
+    override fun clearFields() {
+        searchRecyclerView.adapter = null
+
+        inputStartPoint.onFocusChangeListener = null
+        inputEndPoint.onFocusChangeListener = null
+
+        inputStartPoint.removeTextChangedListener(startPointTextWatcher)
+        inputEndPoint.removeTextChangedListener(endPointTextWatcher)
+
+        inputStartPoint.text.clear()
+        inputEndPoint.text.clear()
+    }
+
+    override fun onItemClick(model: AutocompletePrediction, type: SearchListTypes) {
+        if (type == SearchListTypes.START) {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            preferences.edit()
+                    .putString("startPointPlaceId", model.placeId)
+                    .apply()
+        } else {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            preferences.edit()
+                    .putString("endPointPlaceId", model.placeId)
+                    .apply()
+        }
+    }
+
+    override fun showRideView() {
+        val rideFragment = rideFragmentProvider!!.get()
+        activity!!.supportFragmentManager.beginTransaction()
+            .setCustomAnimations(0, R.anim.slide_in_down)
+            .replace(R.id.content_frame, rideFragment)
+            .commit()
+    }
+
     companion object {
-        val TAG: String = "SearchFragmentTag"
+        const val TAG: String = "SearchFragmentTag"
         val AUTOCOMPLETE_SESSION_TOKEN = AutocompleteSessionToken.newInstance()
     }
 }

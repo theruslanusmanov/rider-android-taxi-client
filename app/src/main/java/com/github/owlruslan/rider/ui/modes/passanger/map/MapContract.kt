@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.map
+package com.github.owlruslan.rider.ui.modes.passanger.map
 
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView

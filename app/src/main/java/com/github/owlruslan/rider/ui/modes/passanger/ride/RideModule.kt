@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.map
+package com.github.owlruslan.rider.ui.modes.passanger.ride
 
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.di.FragmentScoped
@@ -7,12 +7,12 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class MapModule {
+abstract class RideModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun mapFragment(): MapFragment
+    abstract fun driveFragment(): RideFragment
 
     @ActivityScoped
-    @Binds abstract fun mapPresenter(presenter: MapPresenter): MapContract.Presenter
+    @Binds abstract fun drivePresenter(presenter: RidePresenter): RideContract.Presenter
 }
