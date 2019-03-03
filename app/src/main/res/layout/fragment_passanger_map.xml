@@ -14,14 +14,14 @@
               android:layout_width="0dp"
               android:layout_height="0dp"
               tools:context=".MapFragment"
-              app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/cardView"
+              app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/searchMinifiedCardView"
               app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
     />
 
     <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/cardView" app:layout_constraintTop_toBottomOf="@+id/map"
+            android:id="@+id/searchMinifiedCardView" app:layout_constraintTop_toBottomOf="@+id/map"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 

@@ -25,6 +25,8 @@ import com.google.android.gms.maps.model.LatLng
 
 
 
+
+
 @ActivityScoped
 class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, OnMapReadyCallback {
 
@@ -54,6 +56,17 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        searchMinifiedCardView.setOnTouchListener(object : OnSwipeTouchListener(context!!) {
+
+            override fun onSwipeTop() {
+                Toast.makeText(context, "top", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onSwipeBottom() {
+                Toast.makeText(context, "bottom", Toast.LENGTH_SHORT).show()
+            }
+        })
 
         // On bottom destination CardView click
         bottomDestinationCardView.setOnClickListener {
