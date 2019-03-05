@@ -9,11 +9,13 @@ import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.github.owlruslan.rider.R
-
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
 import dagger.android.support.DaggerFragment
@@ -22,13 +24,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import dagger.Lazy
-import kotlinx.android.synthetic.main.fragment_passanger_map.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
-
-
-
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 @ActivityScoped
@@ -56,22 +57,32 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
         val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        // On swipe listener
-        /*val searchMinimisedCardView = view.findViewById<CardView>(R.id.searchMinimisedCardView)
-        searchMinimisedCardView.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
+        val drawerLayout = activity!!.findViewById<DrawerLayout>(R.id.drawer_layout)
+        val menu = view.findViewById<FloatingActionButton>(R.id.menu)
+        menu.setOnClickListener { drawerLayout.openDrawer(GravityCompat.START) }
 
-            override fun onSwipeTop() {
-                Toast.makeText(context, "top", Toast.LENGTH_SHORT).show()
-                val search = Scene.getSceneForLayout(container, R.layout.search, context)
-                TransitionManager.go(search)
+        val bottomSheetSearchCardView = view.findViewById<LinearLayout>(R.id.bottomSheetSearch)
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetSearchCardView)
+        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (BottomSheetBehavior.STATE_DRAGGING == newState) {
+
+                } else if (BottomSheetBehavior.STATE_COLLAPSED == newState) {
+
+                }
             }
-        })*/
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+        })
 
         // On bottom destination CardView click
-
-//        bottomDestinationCardView.setOnClickListener {
-//            presenter.openSearchView()
-//        }
+        val bottomDestinationCardView = view.findViewById<CardView>(R.id.bottomDestinationCardView)
+        bottomDestinationCardView.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
 
         return view
     }

@@ -7,6 +7,8 @@
                                                      android:id="@+id/fragment_map"
                                                      android:background="@android:color/white">
 
+    <include layout="@layout/fab_menu"/>
+
     <include layout="@layout/map" />
 
     <include layout="@layout/search_cardview" />

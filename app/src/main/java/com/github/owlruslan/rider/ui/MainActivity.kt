@@ -12,7 +12,6 @@ import com.github.owlruslan.rider.ui.modes.passanger.map.MapFragment
 import dagger.Lazy
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -28,8 +27,6 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         window.statusBarColor = Color.BLACK
-
-        menu.setOnClickListener { drawer_layout.openDrawer(GravityCompat.START) }
 
         nav_view.setNavigationItemSelectedListener(this)
 
