@@ -1,12 +1,16 @@
 package com.github.owlruslan.rider.ui.modes.passanger.map
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.transition.Scene
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.github.owlruslan.rider.R
 
@@ -44,34 +48,32 @@ class MapFragment @Inject constructor() : DaggerFragment(), MapContract.View, On
         super.onDestroy()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_passanger_map, container, false)
 
         // Add map to fragment
         val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this);
+        mapFragment?.getMapAsync(this)
 
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        searchMinifiedCardView.setOnTouchListener(object : OnSwipeTouchListener(context!!) {
+        // On swipe listener
+        /*val searchMinimisedCardView = view.findViewById<CardView>(R.id.searchMinimisedCardView)
+        searchMinimisedCardView.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
 
             override fun onSwipeTop() {
                 Toast.makeText(context, "top", Toast.LENGTH_SHORT).show()
+                val search = Scene.getSceneForLayout(container, R.layout.search, context)
+                TransitionManager.go(search)
             }
-
-            override fun onSwipeBottom() {
-                Toast.makeText(context, "bottom", Toast.LENGTH_SHORT).show()
-            }
-        })
+        })*/
 
         // On bottom destination CardView click
-        bottomDestinationCardView.setOnClickListener {
-            presenter.openSearchView()
-        }
+
+//        bottomDestinationCardView.setOnClickListener {
+//            presenter.openSearchView()
+//        }
+
+        return view
     }
 
     override fun showSearchView() {
