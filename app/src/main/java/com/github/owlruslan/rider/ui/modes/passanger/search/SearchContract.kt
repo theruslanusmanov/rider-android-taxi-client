@@ -1,52 +1,40 @@
 package com.github.owlruslan.rider.ui.modes.passanger.search
 
+import android.widget.LinearLayout
+import androidx.transition.Scene
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView
-import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 interface SearchContract {
 
     interface View : BaseView<Presenter> {
 
-        fun hideMenuIcon()
+        fun showRideView()
 
         fun showMenuIcon()
 
-        fun showMapView()
+        fun showMap()
 
-        fun createPlacesInstance()
+        fun initBottomSheet()
 
-        fun showSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes)
+        fun showExpandedSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
-        fun hideQuickPlacesLayout()
-
-        fun showQuickPlacesLayout()
-
-        fun clearFields()
-
-        fun showRideView()
+        fun showCollapsedSearch(view: android.view.View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
     }
 
     interface Presenter : BasePresenter<View> {
 
-        fun hideMenu()
-
-        fun showMenu()
-
-        fun openMapView()
-
-        fun initPlaces()
-
-        fun addSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes)
-
-        fun hideQuickPlaces()
-
-        fun showQuickPlaces()
-
-        fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken, type: SearchListTypes)
-
         fun openRideView()
+
+        fun addMenuIcon()
+
+        fun addMap()
+
+        fun addBottomSheet()
+
+        fun expandSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+
+        fun collapseSearch(view: android.view.View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
     }
 }
