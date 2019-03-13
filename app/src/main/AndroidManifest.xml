@@ -37,7 +37,7 @@
         <meta-data android:name="preloaded_fonts" android:resource="@array/preloaded_fonts"/>
 
         <activity
-                android:name="com.github.owlruslan.rider.ui.modes.passanger.map.MapsActivity"
+                android:name="com.github.owlruslan.rider.ui.modes.passanger.search.MapsActivity"
                 android:label="@string/title_activity_maps">
         </activity>
         <activity

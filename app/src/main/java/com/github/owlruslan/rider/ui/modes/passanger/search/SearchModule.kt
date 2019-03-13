@@ -11,8 +11,8 @@ abstract class SearchModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun searchFragment(): SearchFragment
+    abstract fun mapFragment(): SearchFragment
 
     @ActivityScoped
-    @Binds abstract fun searchPresenter(presenter: SearchPresenter): SearchContract.Presenter
+    @Binds abstract fun mapPresenter(presenter: SearchPresenter): SearchContract.Presenter
 }
