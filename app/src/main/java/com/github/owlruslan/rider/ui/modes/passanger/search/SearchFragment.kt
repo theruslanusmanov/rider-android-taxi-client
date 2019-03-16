@@ -2,13 +2,16 @@ package com.github.owlruslan.rider.ui.modes.passanger.search
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -18,6 +21,8 @@ import androidx.transition.*
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.ui.modes.passanger.ride.RideFragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -32,7 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 @ActivityScoped
-class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnMapReadyCallback {
+class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnMapReadyCallback, Map {
 
     @Inject lateinit var presenter: SearchContract.Presenter
 
@@ -42,6 +47,13 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     lateinit var sceneCollapsed: Scene
     lateinit var sceneExpanded: Scene
     lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
+    private var locationPermissionGranted: Boolean = false
+
+    private val fusedLocationProviderClient: FusedLocationProviderClient
+        get() = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+    private var lastKnownLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,23 +164,99 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onMapReady(map: GoogleMap) {
-        if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
-            map.isMyLocationEnabled = true
+        getLocationPermission()
+        updateLocationUI(map)
+        getDeviceLocation(map)
+    }
+
+    override fun getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionGranted = true
         } else {
-            Toast.makeText(context, "You have to accept to enjoy all app's services!", Toast.LENGTH_LONG).show();
-            if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-                map.isMyLocationEnabled = true
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        locationPermissionGranted = false
+
+        when (requestCode) {
+            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationPermissionGranted = true
+                }
             }
         }
+    }
 
-        val sydney = LatLng(-34.0, 151.0)
-        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        map.setOnMapClickListener(GoogleMap.OnMapClickListener { latLng ->
-            map.addMarker(MarkerOptions().position(latLng).title("from onMapClick"))
-            map.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-        })
+    override fun updateLocationUI(map: GoogleMap) {
+        try {
+            if (locationPermissionGranted) {
+                map.isMyLocationEnabled = true
+                map.uiSettings.isMyLocationButtonEnabled = true
+            } else {
+                map.isMyLocationEnabled = false
+                map.uiSettings.isMyLocationButtonEnabled = false
+                lastKnownLocation = null
+                getLocationPermission()
+            }
+        } catch (e: SecurityException)  {
+            Log.e("Exception: %s", e.message);
+        }
+    }
+
+    override fun getDeviceLocation(map: GoogleMap) {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            if (locationPermissionGranted) {
+                val locationResult = fusedLocationProviderClient.lastLocation
+                locationResult.addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        // Set the map's camera position to the current location of the device.
+                        lastKnownLocation = it.result!!
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    lastKnownLocation!!.latitude,
+                                    lastKnownLocation!!.longitude
+                                ), DEFAULT_ZOOM
+                            ))
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Exception: %s", it.exception)
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM))
+                        map.uiSettings.isMyLocationButtonEnabled = false
+                    }
+                }
+            }
+        } catch(e: SecurityException)  {
+            Log.e("Exception: %s", e.message);
+        }
+    }
+
+    companion object {
+        private const val TAG = "SearchFragment"
+        private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+        private const val DEFAULT_ZOOM = 15F
+        // A default location (Sydney, Australia) and default zoom to use when location permission is not granted.
+        private val defaultLocation = LatLng(44.8523341, 44.2106085)
     }
 }
