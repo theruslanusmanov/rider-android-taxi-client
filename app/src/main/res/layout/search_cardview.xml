@@ -30,32 +30,33 @@
 
         </FrameLayout>
 
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp" android:layout_marginBottom="24dp">
-
             <LinearLayout
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:clickable="true" app:srcCompat="@drawable/ic_home"
-                        android:id="@+id/floatingActionButton" android:layout_marginRight="8dp"
-                        app:fabSize="mini" app:backgroundTint="@color/colorAccent" app:elevation="0dp"/>
-                <TextView
-                        android:text="Home"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent" android:id="@+id/textView5" android:layout_weight="1"
-                        android:fontFamily="@font/roboto_medium" android:textSize="14sp"
-                        android:gravity="center_vertical"/>
-            </LinearLayout>
+                    android:layout_height="match_parent" android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp" android:layout_marginBottom="24dp" android:visibility="visible"
+                    android:id="@+id/quickPlacesLayout">
 
-        </LinearLayout>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:clickable="true" app:srcCompat="@drawable/ic_home"
+                            android:id="@+id/floatingActionButton" android:layout_marginRight="8dp"
+                            app:fabSize="mini" app:backgroundTint="@color/colorAccent" app:elevation="0dp"/>
+                    <TextView
+                            android:text="Home"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" android:id="@+id/textView5" android:layout_weight="1"
+                            android:fontFamily="@font/roboto_medium" android:textSize="14sp"
+                            android:gravity="center_vertical"/>
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 

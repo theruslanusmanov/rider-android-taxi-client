@@ -40,6 +40,7 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.search_cardview.*
 import kotlinx.android.synthetic.main.search_expanded.*
 
 @ActivityScoped
@@ -67,7 +68,8 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter.takeView(this);
+        presenter.takeView(this)
+        presenter.initPlaces()
     }
 
     override fun onDestroy() {
@@ -77,6 +79,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
     override fun onResume() {
         super.onResume()
+        presenter.initPlaces()
         presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
     }
 
@@ -107,7 +110,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun showMap() {
-        // Add map to fragment
         val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
     }
@@ -136,8 +138,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
                 // TODO: onSlide update progress of transition
             }
         })
-
-        presenter.initPlaces()
     }
 
     override fun showExpandedSearch(
@@ -161,6 +161,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
             presenter.openRideView()
         }
 
+        // Search
         // Start input
         val inputStartPoint = view.findViewById<TextView>(R.id.inputStartPoint)
         inputStartPoint.setOnFocusChangeListener { _, hasFocus ->
@@ -294,7 +295,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun showSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes) {
-        quickPlacesLayout.apply {
+        searchRecyclerView.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = SearchListAdapter(dataset, this@SearchFragment, type, context)
@@ -310,7 +311,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun clearFields() {
-        quickPlacesLayout.adapter = null
+        searchRecyclerView.adapter = null
 
         inputStartPoint.onFocusChangeListener = null
         inputEndPoint.onFocusChangeListener = null
