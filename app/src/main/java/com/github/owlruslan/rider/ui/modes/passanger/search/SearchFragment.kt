@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.*
 
@@ -40,6 +41,7 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.fab_my_location.*
 import kotlinx.android.synthetic.main.search_cardview.*
 import kotlinx.android.synthetic.main.search_expanded.*
 
@@ -115,6 +117,10 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun initBottomSheet() {
+        // Resize map
+        val map = rootView.findViewById<LinearLayout>(R.id.mapLayout)
+        map.setPadding(0, 0, 0, CARD_VIEW_HEIGHT)
+
         // Bottom sheet scene
         val sceneRoot = rootView.findViewById(R.id.scene_root) as ViewGroup
         sceneCollapsed = Scene.getSceneForLayout(sceneRoot, R.layout.search_collapsed, requireContext())
@@ -202,6 +208,12 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         getLocationPermission()
         updateLocationUI(map)
         getDeviceLocation(map)
+
+        map.uiSettings.isMyLocationButtonEnabled = false
+        fabMyLocation.setOnClickListener {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude), DEFAULT_ZOOM))
+        }
     }
 
     override fun getLocationPermission() {
@@ -344,5 +356,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         // A default location (Sydney, Australia) and default zoom to use when location permission is not granted.
         private val defaultLocation = LatLng(44.8523341, 44.2106085)
         val AUTOCOMPLETE_SESSION_TOKEN = AutocompleteSessionToken.newInstance()
+        private const val CARD_VIEW_HEIGHT = 524
     }
 }
