@@ -1,21 +1,23 @@
 package com.github.owlruslan.rider.ui.modes.passanger.search
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.preference.PreferenceManager
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.*
 
 import com.github.owlruslan.rider.R
@@ -31,13 +33,17 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import dagger.Lazy
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.search_expanded.*
 
 @ActivityScoped
-class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnMapReadyCallback, Map {
+class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnMapReadyCallback, Map, OnSearchListClickListener  {
 
     @Inject lateinit var presenter: SearchContract.Presenter
 
@@ -54,6 +60,10 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         get() = LocationServices.getFusedLocationProviderClient(requireActivity())
 
     private var lastKnownLocation: Location? = null
+
+    private lateinit var placesClient: PlacesClient
+    private lateinit var startPointTextWatcher: TextWatcher
+    private lateinit var endPointTextWatcher: TextWatcher
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,6 +136,8 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
                 // TODO: onSlide update progress of transition
             }
         })
+
+        presenter.initPlaces()
     }
 
     override fun showExpandedSearch(
@@ -147,6 +159,28 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         val btnDone = view.findViewById<TextView>(R.id.btnDone)
         btnDone.setOnClickListener {
             presenter.openRideView()
+        }
+
+        // Start input
+        val inputStartPoint = view.findViewById<TextView>(R.id.inputStartPoint)
+        inputStartPoint.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) presenter.hideQuickPlaces()
+            else presenter.showQuickPlaces()
+        }
+
+        startPointTextWatcher = inputStartPoint.doOnTextChanged { text, _, _, _ ->
+            presenter.startSearch(text.toString(), placesClient, AUTOCOMPLETE_SESSION_TOKEN, SearchListTypes.START)
+        }
+
+        // End input
+        val inputEndPoint = view.findViewById<TextView>(R.id.inputEndPoint)
+        inputEndPoint.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) presenter.hideQuickPlaces()
+            else presenter.showQuickPlaces()
+        }
+
+        endPointTextWatcher = inputEndPoint.doOnTextChanged { text, _, _, _ ->
+            presenter.startSearch(text.toString(), placesClient, AUTOCOMPLETE_SESSION_TOKEN, SearchListTypes.END)
         }
     }
 
@@ -252,11 +286,62 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         }
     }
 
+    override fun createPlacesInstance() {
+        if (!Places.isInitialized()) {
+            Places.initialize(context!!, context!!.getString(R.string.GOOGLE_MAPS_API_KEY))
+            placesClient = Places.createClient(context!!)
+        }
+    }
+
+    override fun showSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes) {
+        quickPlacesLayout.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = SearchListAdapter(dataset, this@SearchFragment, type, context)
+        }
+    }
+
+    override fun hideQuickPlacesLayout() {
+        quickPlacesLayout.visibility = View.GONE
+    }
+
+    override fun showQuickPlacesLayout() {
+        quickPlacesLayout.visibility = View.VISIBLE
+    }
+
+    override fun clearFields() {
+        quickPlacesLayout.adapter = null
+
+        inputStartPoint.onFocusChangeListener = null
+        inputEndPoint.onFocusChangeListener = null
+
+        inputStartPoint.removeTextChangedListener(startPointTextWatcher)
+        inputEndPoint.removeTextChangedListener(endPointTextWatcher)
+
+        inputStartPoint.text.clear()
+        inputEndPoint.text.clear()
+    }
+
+    override fun onItemClick(model: AutocompletePrediction, type: SearchListTypes) {
+        if (type == SearchListTypes.START) {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            preferences.edit()
+                .putString("startPointPlaceId", model.placeId)
+                .apply()
+        } else {
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            preferences.edit()
+                .putString("endPointPlaceId", model.placeId)
+                .apply()
+        }
+    }
+
     companion object {
         private const val TAG = "SearchFragment"
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
         private const val DEFAULT_ZOOM = 15F
         // A default location (Sydney, Australia) and default zoom to use when location permission is not granted.
         private val defaultLocation = LatLng(44.8523341, 44.2106085)
+        val AUTOCOMPLETE_SESSION_TOKEN = AutocompleteSessionToken.newInstance()
     }
 }

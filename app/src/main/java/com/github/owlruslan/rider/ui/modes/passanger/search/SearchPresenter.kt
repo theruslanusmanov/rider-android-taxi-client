@@ -1,8 +1,15 @@
 package com.github.owlruslan.rider.ui.modes.passanger.search
 
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.transition.Scene
 import com.github.owlruslan.rider.di.ActivityScoped
+import com.google.android.gms.common.api.ApiException
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 
@@ -29,5 +36,45 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
 
     override fun collapseSearch(view: android.view.View, sceneCollapsed: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
         this.view?.showCollapsedSearch(view, sceneCollapsed, bottomSheetBehavior)
+    }
+
+    override fun initPlaces() {
+        view?.createPlacesInstance()
+    }
+
+    override fun addSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes) {
+        view?.showSearchList(dataset, type)
+    }
+
+    override fun hideQuickPlaces() {
+        view?.hideQuickPlacesLayout()
+    }
+
+    override fun showQuickPlaces() {
+        view?.showQuickPlacesLayout()
+    }
+
+    override fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken, type: SearchListTypes) {
+        val request = FindAutocompletePredictionsRequest.builder()
+            //.setLocationRestriction(bounds)
+            .setCountry("au")
+            .setTypeFilter(TypeFilter.ADDRESS)
+            .setSessionToken(token)
+            .setQuery(searchText)
+            .build()
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+            val predictions = ArrayList<AutocompletePrediction>(response.autocompletePredictions)
+            this.addSearchList(predictions, type)
+        }.addOnFailureListener { exception ->
+            if (exception is ApiException) {
+                Log.e(TAG, "Place not found: " + exception.statusCode)
+                Log.e(TAG, "Place not found: " + exception.message)
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "SearchPresenter"
     }
 }

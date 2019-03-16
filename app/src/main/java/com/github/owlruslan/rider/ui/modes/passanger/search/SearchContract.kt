@@ -4,6 +4,9 @@ import android.widget.LinearLayout
 import androidx.transition.Scene
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 interface SearchContract {
@@ -21,6 +24,16 @@ interface SearchContract {
         fun showExpandedSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
         fun showCollapsedSearch(view: android.view.View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+
+        fun createPlacesInstance()
+
+        fun showSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes)
+
+        fun hideQuickPlacesLayout()
+
+        fun showQuickPlacesLayout()
+
+        fun clearFields()
     }
 
     interface Presenter : BasePresenter<View> {
@@ -36,5 +49,15 @@ interface SearchContract {
         fun expandSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
         fun collapseSearch(view: android.view.View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+
+        fun initPlaces()
+
+        fun addSearchList(dataset: ArrayList<AutocompletePrediction>, type: SearchListTypes)
+
+        fun hideQuickPlaces()
+
+        fun showQuickPlaces()
+
+        fun startSearch(searchText: String, placesClient: PlacesClient, token: AutocompleteSessionToken, type: SearchListTypes)
     }
 }
