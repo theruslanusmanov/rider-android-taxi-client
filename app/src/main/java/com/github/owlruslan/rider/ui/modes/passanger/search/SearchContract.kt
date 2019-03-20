@@ -1,6 +1,7 @@
 package com.github.owlruslan.rider.ui.modes.passanger.search
 
 import android.widget.LinearLayout
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.transition.Scene
 import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView

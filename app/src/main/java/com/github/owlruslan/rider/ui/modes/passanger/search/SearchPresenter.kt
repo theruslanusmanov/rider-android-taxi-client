@@ -2,6 +2,7 @@ package com.github.owlruslan.rider.ui.modes.passanger.search
 
 import android.util.Log
 import android.widget.LinearLayout
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.transition.Scene
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.google.android.gms.common.api.ApiException

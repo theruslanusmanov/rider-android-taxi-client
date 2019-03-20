@@ -11,10 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.marginTop
 import androidx.core.widget.doOnTextChanged
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -43,6 +45,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fab_my_location.*
 import kotlinx.android.synthetic.main.search_cardview.*
+import kotlinx.android.synthetic.main.search_cardview.view.*
 import kotlinx.android.synthetic.main.search_expanded.*
 
 @ActivityScoped
@@ -131,17 +134,16 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetSearchCardView)
         bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    presenter.expandSearch(rootView, sceneExpanded, bottomSheetBehavior)
-
-                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
-                }
-            }
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // TODO: onSlide update progress of transition
+                if (slideOffset <= 0.5) {
+                    sceneRoot.alpha = 1 - slideOffset * 2
+                    presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
+                } else {
+                    sceneRoot.alpha = slideOffset * 2F - 1
+                    presenter.expandSearch(rootView, sceneExpanded, bottomSheetBehavior)
+                }
             }
         })
     }
@@ -151,7 +153,9 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         sceneExpanded: Scene,
         bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     ) {
-        TransitionManager.go(sceneExpanded)
+        val transition = TransitionSet()
+        transition.duration = 0
+        TransitionManager.go(sceneExpanded, transition)
 
         // Cancel button
         val btnCancel = view.findViewById<TextView>(R.id.btnCancel)
@@ -193,7 +197,10 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
     override fun showCollapsedSearch(view: View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        TransitionManager.go(sceneCollapsed)
+
+        val transition = TransitionSet()
+        transition.duration = 0
+        TransitionManager.go(sceneCollapsed, transition)
 
         // Expand
         val bottomSheetSearch = view.findViewById<LinearLayout>(R.id.bottomSheetSearch)
