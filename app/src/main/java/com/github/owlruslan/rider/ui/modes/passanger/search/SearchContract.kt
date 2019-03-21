@@ -22,9 +22,9 @@ interface SearchContract {
 
         fun initBottomSheet()
 
-        fun showExpandedSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+        fun showExpandedSearch(view: android.view.View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
-        fun showCollapsedSearch(view: android.view.View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+        fun showCollapsedSearch(view: android.view.View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
         fun createPlacesInstance()
 
@@ -47,9 +47,9 @@ interface SearchContract {
 
         fun addBottomSheet()
 
-        fun expandSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+        fun expandSearch(view: android.view.View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
-        fun collapseSearch(view: android.view.View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
+        fun collapseSearch(view: android.view.View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>)
 
         fun initPlaces()
 

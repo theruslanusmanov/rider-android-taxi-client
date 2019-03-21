@@ -45,7 +45,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fab_my_location.*
 import kotlinx.android.synthetic.main.fragment_passenger_search.*
-import kotlinx.android.synthetic.main.search_expanded.*
+import kotlinx.android.synthetic.main.search_input_expanded.*
 
 @ActivityScoped
 class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnMapReadyCallback, Map, OnSearchListClickListener  {
@@ -84,6 +84,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     override fun onResume() {
         super.onResume()
         presenter.initPlaces()
+        presenter.collapseSearch(rootView, bottomSheetBehavior)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -99,6 +100,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.addBottomSheet()
+        presenter.collapseSearch(rootView, bottomSheetBehavior)
     }
 
     override fun showRideView() {
@@ -131,7 +133,13 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetSearchCardView)
         bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {}
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    presenter.expandSearch(rootView, bottomSheetBehavior)
+                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    presenter.collapseSearch(rootView, bottomSheetBehavior)
+                }
+            }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 if (slideOffset - lastSlideOffset > 0) {
@@ -162,14 +170,12 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
                     TransitionManager.go(headerCollapsedScene, transition)
                     TransitionManager.go(searchInputCollapsedScene, transition)
-                    //presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
                 } else {
                     searchInputContainer.alpha = slideOffset * 2F - 1
                     searchHeaderContainer.alpha = slideOffset * 2F - 1
 
                     TransitionManager.go(headerExpandedScene, transition)
                     TransitionManager.go(searchInputExpandedScene, transition)
-                    //presenter.expandSearch(rootView, sceneExpanded, bottomSheetBehavior)
                 }
 
                 lastSlideOffset = slideOffset
@@ -179,16 +185,12 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
     override fun showExpandedSearch(
         view: View,
-        sceneExpanded: Scene,
         bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     ) {
-        val transition = TransitionSet()
-        transition.duration = 0
-        TransitionManager.go(sceneExpanded, transition)
-
+        searchRecyclerView.visibility = View.VISIBLE
         // Cancel button
-        val btnCancel = view.findViewById<TextView>(R.id.btnCancel)
-        btnCancel.setOnClickListener {
+        val btnClose = view.findViewById<TextView>(R.id.btnClose)
+        btnClose.setOnClickListener {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
@@ -224,12 +226,9 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         }
     }
 
-    override fun showCollapsedSearch(view: View, sceneCollapsed: Scene,  bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
+    override fun showCollapsedSearch(view: View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
+        searchRecyclerView.visibility = View.GONE
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-
-        val transition = TransitionSet()
-        transition.duration = 0
-        TransitionManager.go(sceneCollapsed, transition)
 
         // Expand
         val bottomSheetSearch = view.findViewById<LinearLayout>(R.id.bottomSheetSearch)

@@ -31,12 +31,12 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
 
     override fun addBottomSheet() { view?.initBottomSheet() }
 
-    override fun expandSearch(view: android.view.View, sceneExpanded: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
-        this.view?.showExpandedSearch(view, sceneExpanded, bottomSheetBehavior)
+    override fun expandSearch(view: android.view.View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
+        this.view?.showExpandedSearch(view, bottomSheetBehavior)
     }
 
-    override fun collapseSearch(view: android.view.View, sceneCollapsed: Scene, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
-        this.view?.showCollapsedSearch(view, sceneCollapsed, bottomSheetBehavior)
+    override fun collapseSearch(view: android.view.View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
+        this.view?.showCollapsedSearch(view, bottomSheetBehavior)
     }
 
     override fun initPlaces() {
