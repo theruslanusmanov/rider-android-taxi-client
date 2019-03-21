@@ -24,7 +24,7 @@
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
             app:behavior_peekHeight="260dp"
             app:behavior_hideable="false"
-            tools:showIn="@layout/fragment_passanger_search" android:background="@android:color/white">
+            tools:showIn="@layout/fragment_passenger_search" android:background="@android:color/white">
         <LinearLayout
                 android:id="@+id/search"
                 android:orientation="vertical"
@@ -57,18 +57,20 @@
             <androidx.cardview.widget.CardView
                     android:id="@+id/searchCardView"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_margin="16dp"
+                    android:layout_height="48dp"
                     app:cardCornerRadius="4dp"
-                    app:cardElevation="4dp">
+                    app:cardElevation="4dp" android:layout_gravity="center"
+                    android:layout_marginLeft="18dp" android:layout_marginRight="18dp" android:layout_marginTop="18dp"
+                    android:layout_marginBottom="8dp">
                 <LinearLayout
                         android:id="@+id/searchInputContainer"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
                         android:gravity="center_vertical"
-                        tools:ignore="UseCompoundDrawables">
+                        tools:ignore="UseCompoundDrawables"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp" android:layout_gravity="center_vertical">
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

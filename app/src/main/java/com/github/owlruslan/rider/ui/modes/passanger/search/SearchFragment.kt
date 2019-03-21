@@ -11,17 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.marginTop
+
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.*
 
@@ -46,7 +44,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fab_my_location.*
-import kotlinx.android.synthetic.main.fragment_passanger_search.*
+import kotlinx.android.synthetic.main.fragment_passenger_search.*
 import kotlinx.android.synthetic.main.search_expanded.*
 
 @ActivityScoped
@@ -57,8 +55,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     @set:Inject var rideFragmentProvider: Lazy<RideFragment>? = null
 
     lateinit var rootView: View
-    lateinit var sceneCollapsed: Scene
-    lateinit var sceneExpanded: Scene
     lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     private var locationPermissionGranted: Boolean = false
@@ -91,7 +87,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater.inflate(R.layout.fragment_passanger_search, container, false)
+        rootView = inflater.inflate(R.layout.fragment_passenger_search, container, false)
 
         presenter.addMenuIcon()
         presenter.addMap()
@@ -149,13 +145,30 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
                     }
                 }
 
+                val transition = TransitionSet()
+                transition.duration = 0
+
+                val headerSceneRoot = rootView.findViewById(R.id.searchHeaderContainer) as ViewGroup
+                val headerCollapsedScene = Scene.getSceneForLayout(headerSceneRoot, R.layout.search_header_collapsed, requireContext())
+                val headerExpandedScene = Scene.getSceneForLayout(headerSceneRoot, R.layout.search_header_expanded, requireContext())
+
+                val searchInputSceneRoot = rootView.findViewById(R.id.searchInputContainer) as ViewGroup
+                val searchInputCollapsedScene = Scene.getSceneForLayout(searchInputSceneRoot, R.layout.search_input_collapsed, requireContext())
+                val searchInputExpandedScene = Scene.getSceneForLayout(searchInputSceneRoot, R.layout.search_input_expanded, requireContext())
+
                 if (slideOffset <= 0.5) {
                     searchInputContainer.alpha = 1 - slideOffset * 2
                     searchHeaderContainer.alpha = 1 - slideOffset * 2
+
+                    TransitionManager.go(headerCollapsedScene, transition)
+                    TransitionManager.go(searchInputCollapsedScene, transition)
                     //presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
                 } else {
                     searchInputContainer.alpha = slideOffset * 2F - 1
-                    searchHeaderContainer.alpha = 1 - slideOffset * 2
+                    searchHeaderContainer.alpha = slideOffset * 2F - 1
+
+                    TransitionManager.go(headerExpandedScene, transition)
+                    TransitionManager.go(searchInputExpandedScene, transition)
                     //presenter.expandSearch(rootView, sceneExpanded, bottomSheetBehavior)
                 }
 
@@ -379,7 +392,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         // A default location (Sydney, Australia) and default zoom to use when location permission is not granted.
         private val defaultLocation = LatLng(44.8523341, 44.2106085)
         val AUTOCOMPLETE_SESSION_TOKEN = AutocompleteSessionToken.newInstance()
-        private const val CARD_VIEW_HEIGHT = 524
-        private const val SEARCH_CARD_VIEW_HEIGHT = 120
+        private const val CARD_VIEW_HEIGHT = 520
+        private const val SEARCH_CARD_VIEW_HEIGHT = 96
     }
 }
