@@ -34,7 +34,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$rootProject.corektxVersion"
     implementation "androidx.legacy:legacy-support-v4:$rootProject.legacySupportVersion"
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha02'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha03'
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
     implementation "com.google.android.material:material:1.1.0-alpha04"
     implementation "com.google.android.material:material:$rootProject.materialVersion"
