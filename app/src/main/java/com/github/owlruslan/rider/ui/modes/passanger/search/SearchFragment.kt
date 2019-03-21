@@ -11,12 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.app.ActivityCompat
 
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -44,8 +46,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fab_my_location.*
-import kotlinx.android.synthetic.main.search_cardview.*
-import kotlinx.android.synthetic.main.search_cardview.view.*
+import kotlinx.android.synthetic.main.fragment_passanger_search.*
 import kotlinx.android.synthetic.main.search_expanded.*
 
 @ActivityScoped
@@ -71,6 +72,8 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     private lateinit var startPointTextWatcher: TextWatcher
     private lateinit var endPointTextWatcher: TextWatcher
 
+    var lastSlideOffset = 0f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.takeView(this)
@@ -85,7 +88,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     override fun onResume() {
         super.onResume()
         presenter.initPlaces()
-        presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -93,10 +95,14 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
         presenter.addMenuIcon()
         presenter.addMap()
-        presenter.addBottomSheet()
-        presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
+
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.addBottomSheet()
     }
 
     override fun showRideView() {
@@ -124,11 +130,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         val map = rootView.findViewById<LinearLayout>(R.id.mapLayout)
         map.setPadding(0, 0, 0, CARD_VIEW_HEIGHT)
 
-        // Bottom sheet scene
-        val sceneRoot = rootView.findViewById(R.id.scene_root) as ViewGroup
-        sceneCollapsed = Scene.getSceneForLayout(sceneRoot, R.layout.search_collapsed, requireContext())
-        sceneExpanded = Scene.getSceneForLayout(sceneRoot, R.layout.search_expanded, requireContext())
-
         // Bottom sheet listeners
         val bottomSheetSearchCardView = rootView.findViewById<LinearLayout>(R.id.bottomSheetSearch)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetSearchCardView)
@@ -137,13 +138,28 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
             override fun onStateChanged(bottomSheet: View, newState: Int) {}
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (slideOffset <= 0.5) {
-                    sceneRoot.alpha = 1 - slideOffset * 2
-                    presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
+                if (slideOffset - lastSlideOffset > 0) {
+                    // from start to end
+                    searchCardView.updateLayoutParams<ViewGroup.LayoutParams> {
+                        this.height = (SEARCH_CARD_VIEW_HEIGHT + SEARCH_CARD_VIEW_HEIGHT * slideOffset).toInt()
+                    }
                 } else {
-                    sceneRoot.alpha = slideOffset * 2F - 1
-                    presenter.expandSearch(rootView, sceneExpanded, bottomSheetBehavior)
+                    searchCardView.updateLayoutParams<ViewGroup.LayoutParams> {
+                        this.height = (SEARCH_CARD_VIEW_HEIGHT * 2 - SEARCH_CARD_VIEW_HEIGHT * (1 - slideOffset)).toInt()
+                    }
                 }
+
+                if (slideOffset <= 0.5) {
+                    searchInputContainer.alpha = 1 - slideOffset * 2
+                    searchHeaderContainer.alpha = 1 - slideOffset * 2
+                    //presenter.collapseSearch(rootView, sceneCollapsed, bottomSheetBehavior)
+                } else {
+                    searchInputContainer.alpha = slideOffset * 2F - 1
+                    searchHeaderContainer.alpha = 1 - slideOffset * 2
+                    //presenter.expandSearch(rootView, sceneExpanded, bottomSheetBehavior)
+                }
+
+                lastSlideOffset = slideOffset
             }
         })
     }
@@ -364,5 +380,6 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         private val defaultLocation = LatLng(44.8523341, 44.2106085)
         val AUTOCOMPLETE_SESSION_TOKEN = AutocompleteSessionToken.newInstance()
         private const val CARD_VIEW_HEIGHT = 524
+        private const val SEARCH_CARD_VIEW_HEIGHT = 120
     }
 }
