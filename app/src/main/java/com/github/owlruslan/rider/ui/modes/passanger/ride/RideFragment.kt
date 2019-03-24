@@ -45,8 +45,8 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View, 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_passanger_ride, container, false)
 
-        val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
+/*        val mapFragment = this.childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)*/
 
         val listDate = ArrayList<String>()
         listDate.add("1")
