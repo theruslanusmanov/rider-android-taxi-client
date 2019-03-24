@@ -10,4 +10,7 @@
     <string name="greeting">Hey, User</string>
     <string name="greeting_question">Where are you going?</string>
     <string name="destination_hint">Enter destintation</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoib3dscnVzbGFuIiwiYSI6ImNqdG11b3F2YjBqNGE0NWxpMnB1bmVhb3cifQ.PZEXNsNwj5YDkeb4s_raQA</string>
+    <string name="user_location_permission_not_granted">User location permission not granted</string>
+    <string name="user_location_permission_explanation">user_location_permission_explanation</string>
 </resources>
