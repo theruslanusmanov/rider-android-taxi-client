@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.modes.passanger.search
+package com.github.owlruslan.rider.services.map
 
 import android.location.Location
 import com.google.android.gms.maps.GoogleMap

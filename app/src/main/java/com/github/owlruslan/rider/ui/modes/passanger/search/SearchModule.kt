@@ -3,6 +3,10 @@ package com.github.owlruslan.rider.ui.modes.passanger.search
 import android.app.Activity
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.di.FragmentScoped
+import com.github.owlruslan.rider.services.places.IPlaces
+import com.github.owlruslan.rider.services.map.Map
+import com.github.owlruslan.rider.services.map.MapService
+import com.github.owlruslan.rider.services.places.PlacesService
 import com.github.owlruslan.rider.ui.MainActivity
 import dagger.Binds
 import dagger.Module

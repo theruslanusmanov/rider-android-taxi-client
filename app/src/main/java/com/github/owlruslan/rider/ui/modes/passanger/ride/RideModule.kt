@@ -11,8 +11,8 @@ abstract class RideModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun driveFragment(): RideFragment
+    abstract fun rideFragment(): RideFragment
 
     @ActivityScoped
-    @Binds abstract fun drivePresenter(presenter: RidePresenter): RideContract.Presenter
+    @Binds abstract fun ridePresenter(presenter: RidePresenter): RideContract.Presenter
 }

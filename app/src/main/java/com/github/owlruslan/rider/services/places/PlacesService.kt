@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.modes.passanger.search
+package com.github.owlruslan.rider.services.places
 
 import android.content.Context
 import com.github.owlruslan.rider.R

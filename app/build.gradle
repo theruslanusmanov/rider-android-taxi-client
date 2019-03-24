@@ -42,6 +42,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-maps:$rootProject.playServicesVersion"
     implementation "com.google.android.gms:play-services-places:$rootProject.playServicesVersion"
     implementation "com.google.android.libraries.places:places:$rootProject.placesVersion"
+    implementation 'com.akexorcist:googledirectionlibrary:1.1.1'
     testImplementation "junit:junit:$rootProject.junitVersion"
     androidTestImplementation "androidx.test:runner:$rootProject.runnerVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
@@ -54,4 +55,5 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     kapt "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
+    implementation 'androidx.viewpager:viewpager:1.0.0'
 }

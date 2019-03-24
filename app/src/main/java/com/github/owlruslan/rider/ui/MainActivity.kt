@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import com.github.owlruslan.rider.R
+import com.github.owlruslan.rider.ui.modes.passanger.ride.RideFragment
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
 import dagger.Lazy
 import dagger.android.support.DaggerAppCompatActivity
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     @set:Inject var searchFragmentProvider: Lazy<SearchFragment>? = null
+    @set:Inject var rideFragmentProvider: Lazy<RideFragment>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,11 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         nav_view.setNavigationItemSelectedListener(this)
 
         // Add SearchFragment to activity
-        val mapFragment = searchFragmentProvider!!.get()
+        /*val mapFragment = searchFragmentProvider!!.get()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame, mapFragment)
+            .commit()*/
+        val mapFragment = rideFragmentProvider!!.get()
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
             .commit()

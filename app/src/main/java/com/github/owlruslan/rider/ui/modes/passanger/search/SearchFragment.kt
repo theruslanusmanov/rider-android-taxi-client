@@ -15,14 +15,16 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.*
 
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.github.owlruslan.rider.ui.MainActivity
+import com.github.owlruslan.rider.services.map.Map
 import com.github.owlruslan.rider.ui.modes.passanger.ride.RideFragment
-import com.github.owlruslan.rider.ui.modes.passanger.search.MapService.Companion.DEFAULT_ZOOM
-import com.github.owlruslan.rider.ui.modes.passanger.search.MapService.Companion.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+import com.github.owlruslan.rider.services.map.MapService.Companion.DEFAULT_ZOOM
+import com.github.owlruslan.rider.services.map.MapService.Companion.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+import com.github.owlruslan.rider.services.places.PlacesService
 
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -32,10 +34,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import dagger.Lazy
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fab_my_location.*
@@ -82,18 +82,13 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater.inflate(R.layout.fragment_passenger_search, container, false)
-
+        val view = inflater.inflate(R.layout.fragment_passenger_search, container, false)
+        rootView = view
         presenter.addMenuIcon()
         presenter.addMap()
-
-        return rootView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         presenter.addBottomSheet()
         presenter.collapseSearch(rootView, bottomSheetBehavior)
+        return view
     }
 
     override fun showRideView() {
@@ -225,7 +220,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun showCollapsedSearch(view: View, bottomSheetBehavior: BottomSheetBehavior<LinearLayout>) {
-        searchRecyclerView.visibility = View.GONE
+        view.findViewById<RecyclerView>(R.id.searchRecyclerView).visibility = View.GONE
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         // Expand

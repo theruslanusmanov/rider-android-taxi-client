@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.modes.passanger.search
+package com.github.owlruslan.rider.services.map
 
 import android.app.Activity
 import android.content.Context
@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.github.owlruslan.rider.ui.MainActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
