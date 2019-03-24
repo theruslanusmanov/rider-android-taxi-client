@@ -12,6 +12,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 
+import javax.inject.Inject
+
 import androidx.core.view.GravityCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
@@ -24,17 +26,16 @@ import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.services.map.Map
 import com.github.owlruslan.rider.ui.modes.passanger.ride.RideFragment
-import com.github.owlruslan.rider.services.map.MapService.Companion.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
 import com.github.owlruslan.rider.services.places.PlacesService
 
 import dagger.android.support.DaggerFragment
-import javax.inject.Inject
-
 import dagger.Lazy
+
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
@@ -45,6 +46,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+
 import kotlinx.android.synthetic.main.fab_my_location.*
 import kotlinx.android.synthetic.main.fragment_passenger_search.*
 import kotlinx.android.synthetic.main.search_input_expanded.*
@@ -56,8 +58,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
     @Inject
     lateinit var presenter: SearchContract.Presenter
-    @Inject
-    lateinit var mapService: Map
+
     @Inject
     lateinit var placesService: PlacesService
 

@@ -33,14 +33,14 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         nav_view.setNavigationItemSelectedListener(this)
 
         // Add SearchFragment to activity
-        val mapFragment = searchFragmentProvider!!.get()
-        supportFragmentManager.beginTransaction()
-            .add(R.id.content_frame, mapFragment)
-            .commit()
-        /*val mapFragment = rideFragmentProvider!!.get()
+        /*val mapFragment = searchFragmentProvider!!.get()
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
             .commit()*/
+        val mapFragment = rideFragmentProvider!!.get()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame, mapFragment)
+            .commit()
 
     }
 
