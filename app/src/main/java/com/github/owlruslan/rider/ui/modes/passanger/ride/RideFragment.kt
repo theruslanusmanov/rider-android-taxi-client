@@ -28,6 +28,10 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -46,6 +50,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     @Inject lateinit var presenter: RideContract.Presenter
 
     private lateinit var mapView: MapView
+    private lateinit var mapboxMap: MapboxMap
     private lateinit var currentRoute: DirectionsRoute
     private lateinit var client: MapboxDirections
     private lateinit var origin: Point
@@ -59,7 +64,8 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
         // object or in the same activity which contains the mapview.
         Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token))
     }
-    public override fun onResume() {
+
+    override fun onResume() {
         super.onResume()
         mapView.onResume()
     }
@@ -96,29 +102,29 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_passanger_ride, container, false)
 
-
         // Setup the MapView
         mapView = view.findViewById<MapView>(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync {
-            mapboxMap: MapboxMap ->
-                mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-                    // Set the origin location to the Alhambra landmark in Granada, Spain.
-                    origin = Point.fromLngLat(-3.588098, 37.176164)
+            mapboxMap: MapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+            this.mapboxMap = mapboxMap
+                // Set the origin location to the Alhambra landmark in Granada, Spain.
+                origin = Point.fromLngLat(-3.588098, 37.176164)
 
-                    // Set the destination location to the Plaza del Triunfo in Granada, Spain.
-                    destination = Point.fromLngLat(-3.601845, 37.184080)
+                // Set the destination location to the Plaza del Triunfo in Granada, Spain.
+                destination = Point.fromLngLat(-3.601845, 37.184080)
 
-                    initSource(it);
+                val originLatLng = LatLng(origin.latitude(), origin.longitude())
+                val destinationLatLng = LatLng(destination.latitude(), destination.longitude())
 
-                    initLayers(it);
+                initSource(it)
 
-                    // Get the directions route from the Mapbox Directions API
-                    getRoute(it, origin, destination);
-                }
+                initLayers(it)
+
+                // Get the directions route from the Mapbox Directions API
+                getRoute(it, origin, destination)
+            }
         }
-
-
 
         val listDate = ArrayList<String>()
         listDate.add("1")
@@ -233,6 +239,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                     ), Toast.LENGTH_SHORT
                 ).show()
 
+
                 if (style.isFullyLoaded) {
                     // Retrieve and update the source designated for showing the directions route
                     val source = style.getSourceAs<GeoJsonSource>(ROUTE_SOURCE_ID)
@@ -246,6 +253,27 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                                 Feature.fromGeometry(LineString.fromPolyline(currentRoute.geometry()!!, PRECISION_6))
                             )
                         )
+                        // Set route
+                        val route = ArrayList<LatLng>()
+                        val routeCoords = LineString.fromPolyline(currentRoute.geometry()!!, PRECISION_6).coordinates()
+                        for (point: Point in routeCoords) {
+                            route.add(LatLng(point.latitude(), point.longitude()))
+                        }
+
+                        val latLngBounds = LatLngBounds.Builder()
+                            .includes(route)
+                            .build()
+
+                        val visibleBounds: LatLngBounds = mapboxMap.projection.visibleRegion.latLngBounds
+                        val southWest: LatLng  = visibleBounds.southEast
+                        val delta: Double = 0.04
+
+                        val latLngBounds2 = LatLngBounds.Builder()
+                            .includes(route)
+                            .include(LatLng(latLngBounds.latSouth - delta, latLngBounds.lonEast))
+                            .build()
+
+                        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds2, 0, 200, 0, 0))
                     }
                 }
             }
