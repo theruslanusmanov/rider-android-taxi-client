@@ -5,7 +5,11 @@ import com.github.owlruslan.rider.ui.base.BaseView
 
 interface RideContract {
 
-    interface View : BaseView<Presenter> {}
+    interface View : BaseView<Presenter> {
+        fun showSearchView()
+    }
 
-    interface Presenter : BasePresenter<View> {}
+    interface Presenter : BasePresenter<View> {
+
+    }
 }

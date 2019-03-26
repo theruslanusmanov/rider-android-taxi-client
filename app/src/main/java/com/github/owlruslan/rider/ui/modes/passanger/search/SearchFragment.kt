@@ -93,8 +93,9 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onDestroy() {
-        presenter.dropView();  // prevent leaking activity in
         mapView.onDestroy();
+        presenter.dropView();  // prevent leaking activity in
+
         super.onDestroy()
     }
 

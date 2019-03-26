@@ -15,7 +15,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 import androidx.viewpager.widget.ViewPager
+import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.MapboxDirections
 import com.mapbox.api.directions.v5.models.DirectionsResponse
@@ -42,6 +44,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
+import dagger.Lazy
 import timber.log.Timber
 
 
@@ -49,6 +52,9 @@ import timber.log.Timber
 class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
 
     @Inject lateinit var presenter: RideContract.Presenter
+
+    @set:Inject
+    var searchFragmentProvider: Lazy<SearchFragment>? = null
 
     private lateinit var mapView: MapView
     private lateinit var mapboxMap: MapboxMap
@@ -103,6 +109,11 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_passanger_ride, container, false)
 
+        val backButton = view.findViewById<FloatingActionButton>(R.id.backButton)
+        backButton.setOnClickListener {
+            showSearchView()
+        }
+
         // Setup the MapView
         mapView = view.findViewById<MapView>(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -139,6 +150,15 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
         Log.d("FUCK", pagerTitleStrip.textSpacing.toString())
 
         return view
+    }
+
+    override fun showSearchView() {
+        val rideFragment = searchFragmentProvider!!.get()
+        activity!!.supportFragmentManager.beginTransaction()
+            .setCustomAnimations(0, R.anim.slide_in_down)
+            .replace(R.id.content_frame, rideFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     /**
