@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.viewpager.widget.PagerTitleStrip
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -127,12 +128,15 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
         }
 
         val listDate = ArrayList<String>()
-        listDate.add("1")
-        listDate.add("2")
-        listDate.add("3")
+        listDate.add("Economy")
+        listDate.add("Luxury")
 
         val viewPager = view.findViewById<ViewPager>(R.id.viewPager)
         viewPager.adapter = ViewPagerAdapter(requireContext(), listDate)
+
+        val pagerTitleStrip = view.findViewById<PagerTitleStrip>(R.id.pagerTitleStrip)
+        pagerTitleStrip.textSpacing = 8
+        Log.d("FUCK", pagerTitleStrip.textSpacing.toString())
 
         return view
     }
@@ -141,13 +145,14 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     * Add the route and marker sources to the map
     */
     private fun initSource(loadedMapStyle: Style) {
+
+        // Source
         loadedMapStyle.addSource(
             GeoJsonSource(
                 ROUTE_SOURCE_ID,
                 FeatureCollection.fromFeatures(arrayOf())
             )
         )
-
         val iconGeoJsonSource = GeoJsonSource(
             ICON_SOURCE_ID,
             FeatureCollection.fromFeatures(
@@ -157,11 +162,33 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                             origin.longitude(),
                             origin.latitude()
                         )
-                    ), Feature.fromGeometry(Point.fromLngLat(destination.longitude(), destination.latitude()))
+                    )
                 )
             )
         )
         loadedMapStyle.addSource(iconGeoJsonSource)
+
+        // Destination
+        loadedMapStyle.addSource(
+            GeoJsonSource(
+                ROUTE_DESTINATION_ID,
+                FeatureCollection.fromFeatures(arrayOf())
+            )
+        )
+        val iconGeoJsonDestination = GeoJsonSource(
+            ICON_DESTINATION_ID,
+            FeatureCollection.fromFeatures(
+                arrayOf(
+                    Feature.fromGeometry(
+                        Point.fromLngLat(
+                            destination.longitude(),
+                            destination.latitude()
+                        )
+                    )
+                )
+            )
+        )
+        loadedMapStyle.addSource(iconGeoJsonDestination)
     }
 
     /**
@@ -175,24 +202,39 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
             PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
             PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
             PropertyFactory.lineWidth(5f),
-            PropertyFactory.lineColor(Color.parseColor("#009688"))
+            PropertyFactory.lineColor(Color.parseColor("#0062FF"))
         )
         loadedMapStyle.addLayer(routeLayer)
 
-        // Add the red marker icon image to the map
+        // Source
+        // Add the source marker icon image to the map
         loadedMapStyle.addImage(
-            RED_PIN_ICON_ID, BitmapUtils.getBitmapFromDrawable(
-                resources.getDrawable(R.drawable.ic_menu_share, null)
+            SOURCE_PIN_ICON_ID, BitmapUtils.getBitmapFromDrawable(
+                resources.getDrawable(R.drawable.ic_source, null)
             )!!
         )
-
-        // Add the red marker icon SymbolLayer to the map
+        // Add the source marker icon SymbolLayer to the map
         loadedMapStyle.addLayer(
-            SymbolLayer(ICON_LAYER_ID, ICON_SOURCE_ID).withProperties(
-                PropertyFactory.iconImage(RED_PIN_ICON_ID),
+            SymbolLayer("icon-source-layer-id", ICON_SOURCE_ID).withProperties(
+                PropertyFactory.iconImage(SOURCE_PIN_ICON_ID),
                 PropertyFactory.iconIgnorePlacement(true),
+                PropertyFactory.iconIgnorePlacement(true)
+            )
+        )
+
+        // Destination
+        // Add the destination marker icon image to the map
+        loadedMapStyle.addImage(
+            DESTINATION_PIN_ICON_ID, BitmapUtils.getBitmapFromDrawable(
+                resources.getDrawable(R.drawable.ic_destination, null)
+            )!!
+        )
+        // Add the destination marker icon SymbolLayer to the map
+        loadedMapStyle.addLayer(
+            SymbolLayer("icon-destination-layer-id", ICON_DESTINATION_ID).withProperties(
+                PropertyFactory.iconImage(DESTINATION_PIN_ICON_ID),
                 PropertyFactory.iconIgnorePlacement(true),
-                PropertyFactory.iconOffset(arrayOf(0f, -4f))
+                PropertyFactory.iconIgnorePlacement(true)
             )
         )
     }
@@ -291,8 +333,11 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     companion object {
             private val ROUTE_LAYER_ID = "route-layer-id"
             private val ROUTE_SOURCE_ID = "route-source-id"
+            private val ROUTE_DESTINATION_ID = "route-destination-id"
             private val ICON_LAYER_ID = "icon-layer-id"
             private val ICON_SOURCE_ID = "icon-source-id"
-            private val RED_PIN_ICON_ID = "red-pin-icon-id"
+            private val ICON_DESTINATION_ID = "icon-destination-id"
+            private val SOURCE_PIN_ICON_ID = "source-pin-icon-id"
+            private val DESTINATION_PIN_ICON_ID = "destination-pin-icon-id"
     }
 }
