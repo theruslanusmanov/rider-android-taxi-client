@@ -92,18 +92,22 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
         mapView.onPause()
     }
 
-    override fun onDestroy() {
-        presenter.dropView();  // prevent leaking activity in
-
+    override fun onDestroyView() {
+        super.onDestroyView()
         client.cancelCall()
         mapView.onDestroy()
+    }
 
+    override fun onDestroy() {
+        presenter.dropView();  // prevent leaking activity in
         super.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory()
+        if (!mapView.isDestroyed) {
+            mapView.onLowMemory();
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -114,29 +118,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
             showSearchView()
         }
 
-        // Setup the MapView
-        mapView = view.findViewById<MapView>(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync {
-            mapboxMap: MapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-            this.mapboxMap = mapboxMap
-                // Set the origin location to the Alhambra landmark in Granada, Spain.
-                origin = Point.fromLngLat(-3.588098, 37.176164)
 
-                // Set the destination location to the Plaza del Triunfo in Granada, Spain.
-                destination = Point.fromLngLat(-3.601845, 37.184080)
-
-                val originLatLng = LatLng(origin.latitude(), origin.longitude())
-                val destinationLatLng = LatLng(destination.latitude(), destination.longitude())
-
-                initSource(it)
-
-                initLayers(it)
-
-                // Get the directions route from the Mapbox Directions API
-                getRoute(it, origin, destination)
-            }
-        }
 
         val listDate = ArrayList<String>()
         listDate.add("Economy")
@@ -147,9 +129,34 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
 
         val pagerTitleStrip = view.findViewById<PagerTitleStrip>(R.id.pagerTitleStrip)
         pagerTitleStrip.textSpacing = 8
-        Log.d("FUCK", pagerTitleStrip.textSpacing.toString())
 
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Setup the MapView
+        mapView = view.findViewById<MapView>(R.id.mapView);
+        mapView.getMapAsync {
+                mapboxMap: MapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+            this.mapboxMap = mapboxMap
+            // Set the origin location to the Alhambra landmark in Granada, Spain.
+            origin = Point.fromLngLat(-3.588098, 37.176164)
+
+            // Set the destination location to the Plaza del Triunfo in Granada, Spain.
+            destination = Point.fromLngLat(-3.601845, 37.184080)
+
+            val originLatLng = LatLng(origin.latitude(), origin.longitude())
+            val destinationLatLng = LatLng(destination.latitude(), destination.longitude())
+
+            initSource(it)
+
+            initLayers(it)
+
+            // Get the directions route from the Mapbox Directions API
+            getRoute(it, origin, destination)
+        }
+        }
     }
 
     override fun showSearchView() {

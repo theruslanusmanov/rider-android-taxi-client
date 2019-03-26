@@ -93,10 +93,13 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onDestroy() {
-        mapView.onDestroy();
-        presenter.dropView();  // prevent leaking activity in
-
+        presenter.dropView()  // prevent leaking activity in
         super.onDestroy()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapView.onDestroy()
     }
 
     override fun onResume() {
@@ -125,7 +128,9 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory();
+        if (!mapView.isDestroyed) {
+            mapView.onLowMemory();
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -136,11 +141,13 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
         presenter.addBottomSheet()
         presenter.collapseSearch(rootView, bottomSheetBehavior)
 
-        mapView = view.findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
-
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mapView = view.findViewById(R.id.mapView)
+        mapView.getMapAsync(this)
     }
 
     override fun showRideView() {

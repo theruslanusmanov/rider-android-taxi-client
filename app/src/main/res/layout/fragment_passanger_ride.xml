@@ -52,7 +52,7 @@
                 android:layout_marginStart="8dp" app:fabSize="mini"/>
         <androidx.viewpager.widget.ViewPager
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="220dp"
                 android:background="@android:color/white"
                 android:id="@+id/viewPager"
                 android:layout_gravity="bottom" app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
@@ -60,9 +60,12 @@
                 tools:background="@android:color/darker_gray">
             <androidx.viewpager.widget.PagerTitleStrip
                     android:id="@+id/pagerTitleStrip"
-                    android:layout_width="200dp"
+                    android:layout_width="240dp"
+                    android:padding="16dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top|center">
+                    android:layout_gravity="top|center"
+                    android:textAppearance="@style/PagerTabStripText"
+                    tools:background="@color/quantum_grey">
             </androidx.viewpager.widget.PagerTitleStrip>
         </androidx.viewpager.widget.ViewPager>
         <LinearLayout
