@@ -6,10 +6,16 @@ import com.github.owlruslan.rider.ui.base.BaseView
 interface RideContract {
 
     interface View : BaseView<Presenter> {
+
         fun showSearchView()
+
+        fun showViewPager()
     }
 
     interface Presenter : BasePresenter<View> {
 
+        fun goToSearchView()
+
+        fun addViewPager()
     }
 }

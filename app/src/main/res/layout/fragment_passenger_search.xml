@@ -6,15 +6,19 @@
                                                      android:id="@+id/fragment_map"
                                                      android:background="@android:color/white">
 
-    <include layout="@layout/fab_menu" android:id="@+id/include3"/>
+    <include
+            layout="@layout/fab_menu"
+             android:id="@+id/include3"
+             android:visibility="visible"/>
 
     <include layout="@layout/fab_my_location"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              app:layout_anchorGravity="right|center" app:layout_anchor="@+id/include3"
-             android:layout_marginBottom="24dp"/>
+             android:layout_marginBottom="24dp" android:visibility="visible"/>
 
-    <include layout="@layout/map"/>
+    <include layout="@layout/map" android:elevation="0dp"/>
+
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"

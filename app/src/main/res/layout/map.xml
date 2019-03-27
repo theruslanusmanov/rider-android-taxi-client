@@ -8,6 +8,7 @@
 
     <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"
+            android:elevation="0dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             mapbox:mapbox_cameraZoom="10" />

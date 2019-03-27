@@ -13,4 +13,12 @@ class RidePresenter @Inject constructor() : RideContract.Presenter {
     override fun dropView() {
         view = null
     }
+
+    override fun goToSearchView() {
+        view?.showSearchView()
+    }
+
+    override fun addViewPager() {
+        view?.showViewPager()
+    }
 }

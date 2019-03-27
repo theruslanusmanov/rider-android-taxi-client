@@ -3,20 +3,28 @@ package com.github.owlruslan.rider.ui.modes.passanger.ride
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.transition.*
 import androidx.viewpager.widget.PagerTitleStrip
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
-import com.google.android.gms.maps.OnMapReadyCallback
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 import androidx.viewpager.widget.ViewPager
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
-import com.google.android.gms.maps.GoogleMap
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.MapboxDirections
@@ -37,6 +45,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property
@@ -45,11 +54,13 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import dagger.Lazy
+import kotlinx.android.synthetic.main.fragment_passanger_ride.*
 import timber.log.Timber
 
 
 @ActivityScoped
-class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
+class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
+    OnMapReadyCallback {
 
     @Inject lateinit var presenter: RideContract.Presenter
 
@@ -62,11 +73,11 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     private lateinit var client: MapboxDirections
     private lateinit var origin: Point
     private lateinit var destination: Point
+    private lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.takeView(this)
-
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
         Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token))
@@ -112,51 +123,51 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_passanger_ride, container, false)
-
-        val backButton = view.findViewById<FloatingActionButton>(R.id.backButton)
-        backButton.setOnClickListener {
-            showSearchView()
-        }
-
-
-
-        val listDate = ArrayList<String>()
-        listDate.add("Economy")
-        listDate.add("Luxury")
-
-        val viewPager = view.findViewById<ViewPager>(R.id.viewPager)
-        viewPager.adapter = ViewPagerAdapter(requireContext(), listDate)
-
-        val pagerTitleStrip = view.findViewById<PagerTitleStrip>(R.id.pagerTitleStrip)
-        pagerTitleStrip.textSpacing = 8
-
+        rootView = view
+        presenter.addViewPager()
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // TODO: Transition
+        val sceneRoot: ViewGroup = view.findViewById<ConstraintLayout>(R.id.panelRoot) as ViewGroup
+        val driverInfoScene: Scene = Scene.getSceneForLayout(sceneRoot, R.layout.driver_info_cardview, requireContext())
+        requestButton.setOnClickListener {
+            // Hide top navigation bar
+            //topNavigationInfoCardView.visibility = View.GONE
+            TransitionManager.go(driverInfoScene, Slide().apply {
+
+                addListener(object : Transition.TransitionListener {
+
+                    override fun onTransitionEnd(transition: Transition) {
+
+                        val bottomSheetDriverInfoCardView = rootView.findViewById<CardView>(R.id.bottomSheetDriverInfoCardView)
+                        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetDriverInfoCardView)
+
+                        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                            override fun onStateChanged(bottomSheet: View, newState: Int) {}
+                        })
+                    }
+                    override fun onTransitionResume(transition: Transition) {}
+                    override fun onTransitionPause(transition: Transition) {}
+                    override fun onTransitionCancel(transition: Transition) {}
+                    override fun onTransitionStart(transition: Transition) {}
+                })
+
+            })
+
+        }
+
+        backButton.setOnClickListener {
+            presenter.goToSearchView()
+        }
+
         // Setup the MapView
         mapView = view.findViewById<MapView>(R.id.mapView);
-        mapView.getMapAsync {
-                mapboxMap: MapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-            this.mapboxMap = mapboxMap
-            // Set the origin location to the Alhambra landmark in Granada, Spain.
-            origin = Point.fromLngLat(-3.588098, 37.176164)
-
-            // Set the destination location to the Plaza del Triunfo in Granada, Spain.
-            destination = Point.fromLngLat(-3.601845, 37.184080)
-
-            val originLatLng = LatLng(origin.latitude(), origin.longitude())
-            val destinationLatLng = LatLng(destination.latitude(), destination.longitude())
-
-            initSource(it)
-
-            initLayers(it)
-
-            // Get the directions route from the Mapbox Directions API
-            getRoute(it, origin, destination)
-        }
-        }
+        mapView.getMapAsync(this)
     }
 
     override fun showSearchView() {
@@ -166,6 +177,18 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
             .replace(R.id.content_frame, rideFragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun showViewPager() {
+        val listDate = ArrayList<String>()
+        listDate.add("Economy")
+        listDate.add("Luxury")
+
+        val viewPager = rootView.findViewById<ViewPager>(R.id.viewPager)
+        viewPager.adapter = ViewPagerAdapter(requireContext(), listDate)
+
+        val pagerTitleStrip = rootView.findViewById<PagerTitleStrip>(R.id.pagerTitleStrip)
+        pagerTitleStrip.textSpacing = 8
     }
 
     /**
@@ -333,9 +356,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                             .includes(route)
                             .build()
 
-                        val visibleBounds: LatLngBounds = mapboxMap.projection.visibleRegion.latLngBounds
-                        val southWest: LatLng  = visibleBounds.southEast
-                        val delta: Double = 0.04
+                        val delta = 0.04
 
                         val latLngBounds2 = LatLngBounds.Builder()
                             .includes(route)
@@ -357,11 +378,27 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
         })
     }
 
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+            this.mapboxMap = mapboxMap
+
+            // Set the origin location to the Alhambra landmark in Granada, Spain.
+            origin = Point.fromLngLat(-3.588098, 37.176164)
+            // Set the destination location to the Plaza del Triunfo in Granada, Spain.
+            destination = Point.fromLngLat(-3.601845, 37.184080)
+
+            initSource(it)
+            initLayers(it)
+
+            // Get the directions route from the Mapbox Directions API
+            getRoute(it, origin, destination)
+        }
+    }
+
     companion object {
             private val ROUTE_LAYER_ID = "route-layer-id"
             private val ROUTE_SOURCE_ID = "route-source-id"
             private val ROUTE_DESTINATION_ID = "route-destination-id"
-            private val ICON_LAYER_ID = "icon-layer-id"
             private val ICON_SOURCE_ID = "icon-source-id"
             private val ICON_DESTINATION_ID = "icon-destination-id"
             private val SOURCE_PIN_ICON_ID = "source-pin-icon-id"
