@@ -5,9 +5,11 @@
                                                      android:orientation="vertical"
                                                      android:layout_width="match_parent"
                                                      android:layout_height="match_parent"
-                                                     android:paddingStart="16dp" android:paddingEnd="16dp"
-                                                     android:paddingTop="8dp" android:layout_gravity="bottom"
-                                                     app:layout_constraintTop_toTopOf="parent">
+                                                     android:paddingEnd="16dp"
+                                                     android:layout_gravity="bottom"
+                                                     app:layout_constraintTop_toTopOf="parent"
+                                                     android:paddingStart="16dp" android:layout_marginTop="36dp"
+                                                     tools:background="@color/quantum_grey">
 
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"

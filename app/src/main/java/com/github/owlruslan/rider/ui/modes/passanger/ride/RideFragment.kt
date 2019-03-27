@@ -43,10 +43,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.maps.*
 import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
@@ -67,7 +64,6 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
     @set:Inject
     var searchFragmentProvider: Lazy<SearchFragment>? = null
 
-    private lateinit var mapView: MapView
     private lateinit var mapboxMap: MapboxMap
     private lateinit var currentRoute: DirectionsRoute
     private lateinit var client: MapboxDirections
@@ -83,42 +79,14 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
         Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token))
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
     override fun onDestroyView() {
-        super.onDestroyView()
         client.cancelCall()
-        mapView.onDestroy()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
         presenter.dropView();  // prevent leaking activity in
         super.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        if (!mapView.isDestroyed) {
-            mapView.onLowMemory();
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -131,10 +99,11 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO: Transition
+        // Transition to driver info
         val sceneRoot: ViewGroup = view.findViewById<ConstraintLayout>(R.id.panelRoot) as ViewGroup
         val driverInfoScene: Scene = Scene.getSceneForLayout(sceneRoot, R.layout.driver_info_cardview, requireContext())
         requestButton.setOnClickListener {
+
             // Hide top navigation bar
             //topNavigationInfoCardView.visibility = View.GONE
             TransitionManager.go(driverInfoScene, Slide().apply {
@@ -164,10 +133,9 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
         backButton.setOnClickListener {
             presenter.goToSearchView()
         }
-
         // Setup the MapView
-        mapView = view.findViewById<MapView>(R.id.mapView);
-        mapView.getMapAsync(this)
+        val map = this.childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        map.getMapAsync(this)
     }
 
     override fun showSearchView() {
