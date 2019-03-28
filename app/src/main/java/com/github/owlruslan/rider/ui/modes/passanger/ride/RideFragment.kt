@@ -1,6 +1,8 @@
 package com.github.owlruslan.rider.ui.modes.passanger.ride
 
+import android.animation.ValueAnimator
 import android.graphics.Color
+import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -39,6 +41,7 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -70,6 +73,8 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
     private lateinit var origin: Point
     private lateinit var destination: Point
     private lateinit var rootView: View
+    private lateinit var sourceIconLayer: SymbolLayer
+    private lateinit var pulseCircleLayer: SymbolLayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,13 +104,36 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Transition to driver info
         val sceneRoot: ViewGroup = view.findViewById<ConstraintLayout>(R.id.panelRoot) as ViewGroup
         val driverInfoScene: Scene = Scene.getSceneForLayout(sceneRoot, R.layout.driver_info_cardview, requireContext())
+
         requestButton.setOnClickListener {
 
             // Hide top navigation bar
-            //topNavigationInfoCardView.visibility = View.GONE
+            topNavigationInfoCardView.visibility = View.GONE
+
+            // Set camera position to origin point
+            val position = CameraPosition.Builder()
+                .target(LatLng(origin.latitude(), origin.longitude()))
+                .zoom(16.0)
+                .build()
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 3000)
+            mapboxMap.addOnCameraIdleListener {
+                val markerAnimator = ValueAnimator()
+                markerAnimator.setObjectValues(0f, 1f)
+                markerAnimator.duration = 1000
+                markerAnimator.addUpdateListener {
+                    pulseCircleLayer.setProperties(
+                        PropertyFactory.iconSize(4 * it.animatedValue as Float),
+                        PropertyFactory.iconOpacity(1 - it.animatedValue as Float)
+                    );
+                }
+                markerAnimator.repeatCount = ValueAnimator.INFINITE
+                markerAnimator.repeatMode = ValueAnimator.RESTART
+                markerAnimator.start()
+            }
+
+            // Transition to driver info
             TransitionManager.go(driverInfoScene, Slide().apply {
 
                 addListener(object : Transition.TransitionListener {
@@ -186,6 +214,28 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
         )
         loadedMapStyle.addSource(iconGeoJsonSource)
 
+        // Pulse Circle
+        loadedMapStyle.addSource(
+            GeoJsonSource(
+                "source-pulse-circle",
+                FeatureCollection.fromFeatures(arrayOf())
+            )
+        )
+        val iconGeoJsonPulseCircle = GeoJsonSource(
+            "icon-pulse-circle",
+            FeatureCollection.fromFeatures(
+                arrayOf(
+                    Feature.fromGeometry(
+                        Point.fromLngLat(
+                            origin.longitude(),
+                            origin.latitude()
+                        )
+                    )
+                )
+            )
+        )
+        loadedMapStyle.addSource(iconGeoJsonPulseCircle)
+
         // Destination
         loadedMapStyle.addSource(
             GeoJsonSource(
@@ -232,13 +282,27 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
             )!!
         )
         // Add the source marker icon SymbolLayer to the map
-        loadedMapStyle.addLayer(
-            SymbolLayer("icon-source-layer-id", ICON_SOURCE_ID).withProperties(
-                PropertyFactory.iconImage(SOURCE_PIN_ICON_ID),
-                PropertyFactory.iconIgnorePlacement(true),
-                PropertyFactory.iconIgnorePlacement(true)
-            )
+        sourceIconLayer = SymbolLayer("icon-source-layer-id", ICON_SOURCE_ID).withProperties(
+            PropertyFactory.iconImage(SOURCE_PIN_ICON_ID),
+            PropertyFactory.iconIgnorePlacement(true),
+            PropertyFactory.iconIgnorePlacement(true)
         )
+        loadedMapStyle.addLayer(
+            sourceIconLayer
+        )
+
+        // Pulse circle
+        loadedMapStyle.addImage(
+            "pulse-circle-image", BitmapUtils.getBitmapFromDrawable(
+                resources.getDrawable(R.drawable.pulse_circle, null)
+            )!!
+        )
+        pulseCircleLayer = SymbolLayer("icon-pulse-circle-layer-id", "icon-pulse-circle").withProperties(
+            PropertyFactory.iconImage("pulse-circle-image"),
+            PropertyFactory.iconIgnorePlacement(true),
+            PropertyFactory.iconIgnorePlacement(true)
+        )
+        loadedMapStyle.addLayerBelow(pulseCircleLayer, "icon-source-layer-id")
 
         // Destination
         // Add the destination marker icon image to the map

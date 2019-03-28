@@ -18,7 +18,7 @@
             android:layout_height="32dp"
             android:layout_marginTop="32dp" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
             app:cardElevation="8dp" app:cardCornerRadius="4dp"
-            android:id="@+id/topNavigationInfoCardView" android:visibility="gone">
+            android:id="@+id/topNavigationInfoCardView" android:visibility="visible">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
