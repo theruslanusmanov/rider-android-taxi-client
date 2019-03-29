@@ -161,8 +161,9 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe({
+                    // Stop searching animation
                     mapboxMap.removeOnCameraIdleListener(listener)
-                    // 1. Draw the path to nearby car
+                    // Draw path from car to user
                     mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                         destination = Point.fromLngLat(origin.longitude(), origin.latitude())
                         origin = Point.fromLngLat(49.124175, 55.789049)
@@ -170,7 +171,9 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
                         initLayers(it)
                         getRoute(it, origin, destination)
                     }
+
                 }, {})
+
 
             // Transition to driver info
             TransitionManager.go(driverInfoScene, Slide().apply {
