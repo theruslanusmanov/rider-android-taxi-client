@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.graphics.Color
 import android.graphics.PointF
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -54,8 +55,17 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.BitmapUtils
 import dagger.Lazy
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_passanger_ride.*
+import org.reactivestreams.Subscription
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 
 @ActivityScoped
@@ -104,10 +114,11 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sceneRoot: ViewGroup = view.findViewById<ConstraintLayout>(R.id.panelRoot) as ViewGroup
+        val sceneRoot: ViewGroup = view.findViewById<View>(R.id.panelRoot) as ViewGroup
         val driverInfoScene: Scene = Scene.getSceneForLayout(sceneRoot, R.layout.driver_info_cardview, requireContext())
 
         requestButton.setOnClickListener {
+            // 1. Draw the path to nearby car
 
             // Hide top navigation bar
             topNavigationInfoCardView.visibility = View.GONE
@@ -118,13 +129,14 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
                 .zoom(16.0)
                 .build()
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 3000)
-            mapboxMap.addOnCameraIdleListener {
+            // When searching nearby car
+            val listener = {
                 val markerAnimator = ValueAnimator()
                 markerAnimator.setObjectValues(0f, 1f)
                 markerAnimator.duration = 1000
                 markerAnimator.addUpdateListener {
                     pulseCircleLayer.setProperties(
-                        PropertyFactory.iconSize(4 * it.animatedValue as Float),
+                        PropertyFactory.iconSize(10 * it.animatedValue as Float),
                         PropertyFactory.iconOpacity(1 - it.animatedValue as Float)
                     );
                 }
@@ -132,6 +144,33 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
                 markerAnimator.repeatMode = ValueAnimator.RESTART
                 markerAnimator.start()
             }
+
+            mapboxMap.addOnCameraIdleListener(listener)
+
+            /*
+                    TODO:
+                        1. Draw the path to nearby car.
+                        2. Animate moving the car model to origin point.
+                        3. Animate moving the car moving to destination point.
+                        4. Rate the driver window
+                        5. END!!!
+                     */
+            // 1. Draw the path to nearby car.
+            Single.just(true)
+                .delay(3, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    mapboxMap.removeOnCameraIdleListener(listener)
+                    // 1. Draw the path to nearby car
+                    mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+                        destination = Point.fromLngLat(origin.longitude(), origin.latitude())
+                        origin = Point.fromLngLat(49.124175, 55.789049)
+                        initSource(it)
+                        initLayers(it)
+                        getRoute(it, origin, destination)
+                    }
+                }, {})
 
             // Transition to driver info
             TransitionManager.go(driverInfoScene, Slide().apply {
@@ -155,7 +194,6 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
                 })
 
             })
-
         }
 
         backButton.setOnClickListener {
@@ -415,9 +453,9 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View,
             this.mapboxMap = mapboxMap
 
             // Set the origin location to the Alhambra landmark in Granada, Spain.
-            origin = Point.fromLngLat(-3.588098, 37.176164)
+            origin = Point.fromLngLat(49.124790, 55.789607)
             // Set the destination location to the Plaza del Triunfo in Granada, Spain.
-            destination = Point.fromLngLat(-3.601845, 37.184080)
+            destination = Point.fromLngLat(49.125764, 55.796164)
 
             initSource(it)
             initLayers(it)
