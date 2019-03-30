@@ -10,6 +10,7 @@ import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
+import com.github.owlruslan.rider.services.map.mapbox.MapboxService
 import com.github.owlruslan.rider.ui.modes.passanger.complete.CompleteFragment
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
 import com.mapbox.geojson.Point
@@ -92,7 +93,9 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     override fun showSearchAnimation() {
         showTransitionToDriverRequest()
 
-        val listener = mapboxService.animateSearch(PICKUP_POINT, POINT_ZOOM, CAMERA_ANIMATION_TIME)
+        val listener = MapboxAnimation.animateSearch(
+            PICKUP_POINT, POINT_ZOOM, CAMERA_ANIMATION_TIME, MapboxService.PULSE_CIRCLE_LAYER_ID, mapboxMap
+        )
 
         // 1. Draw the path to nearby car.
         Single.just(true)
@@ -117,8 +120,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     }
 
     private fun showTransitionToDriverRequest() {
-        val scene: Scene =
-            Scene.getSceneForLayout(panelRoot, R.layout.driver_info_cardview, requireContext())
+        val scene: Scene = Scene.getSceneForLayout(panelRoot, R.layout.driver_info_cardview, requireContext())
         TransitionManager.go(scene, Slide())
     }
 
@@ -150,12 +152,8 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
             .commit()
     }
 
-    override fun showViewPager() {
-        val listDate = ArrayList<String>()
-        listDate.add("Economy")
-        listDate.add("Luxury")
-
-        viewPager.adapter = ViewPagerAdapter(requireContext(), listDate)
+    override fun showViewPager(data: ArrayList<String>) {
+        viewPager.adapter = ViewPagerAdapter(requireContext(), data)
         pagerTitleStrip.textSpacing = 8
     }
 

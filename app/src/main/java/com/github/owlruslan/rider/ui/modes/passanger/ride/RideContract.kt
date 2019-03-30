@@ -10,7 +10,7 @@ interface RideContract {
 
         fun showFragment(fragment: Fragment)
 
-        fun showViewPager()
+        fun showViewPager(data: ArrayList<String>)
 
         fun createMapboxInstance()
 

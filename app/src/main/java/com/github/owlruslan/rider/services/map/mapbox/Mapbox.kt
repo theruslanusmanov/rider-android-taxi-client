@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.modes.passanger.ride
+package com.github.owlruslan.rider.services.map.mapbox
 
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -15,6 +15,4 @@ interface Mapbox {
     fun addMapboxSources(style: Style, start: Point, end: Point)
 
     fun cancelCall()
-
-    fun animateSearch(point: Point, zoom: Double, animationTime: Int): () -> Unit
 }

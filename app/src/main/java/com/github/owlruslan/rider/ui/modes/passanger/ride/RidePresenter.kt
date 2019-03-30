@@ -20,7 +20,11 @@ class RidePresenter @Inject constructor() : RideContract.Presenter {
     }
 
     override fun addViewPager() {
-        view?.showViewPager()
+        val data = ArrayList<String>()
+        data.add("Economy")
+        data.add("Luxury")
+
+        view?.showViewPager(data)
     }
 
     override fun initMapbox() {
