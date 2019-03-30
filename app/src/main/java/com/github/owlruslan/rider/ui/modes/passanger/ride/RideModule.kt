@@ -15,4 +15,8 @@ abstract class RideModule {
 
     @ActivityScoped
     @Binds abstract fun ridePresenter(presenter: RidePresenter): RideContract.Presenter
+
+    @Binds
+    @ActivityScoped
+    abstract fun mapboxService(mapboxService: MapboxService): Mapbox
 }
