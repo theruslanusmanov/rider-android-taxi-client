@@ -79,25 +79,18 @@ class MapboxService @Inject constructor() : Mapbox {
         return routeLatLngList
     }
 
-    private fun setCameraBoundsWithBottomPadding(routeLatLngList: List<LatLng>): LatLngBounds {
-        val delta = CAMERA_BOUNDS_LATITUDE_DELTA
-        val latLngBounds = LatLngBounds.Builder()
+    private fun setCameraBoundsWithBottomPadding(routeLatLngList: List<LatLng>): LatLngBounds =
+        LatLngBounds.Builder()
             .includes(routeLatLngList)
             .build()
-        return LatLngBounds.Builder()
-            .includes(routeLatLngList)
-            .include(LatLng(latLngBounds.latSouth - delta, latLngBounds.lonEast))
-            .build()
-    }
 
     private fun setCameraToTopOfScreen(route: DirectionsRoute) {
         val bounds = setCameraBoundsWithBottomPadding(
             createRouteLatLngListFromDirectionsRoute(route)
         )
         mapboxMap.moveCamera(
-            CameraUpdateFactory.newLatLngBounds(
-                bounds, 0, 200, 0, 0
-            )
+            CameraUpdateFactory
+                .newLatLngBounds(bounds, 200, 200, 200, 800)
         )
     }
 
@@ -172,6 +165,7 @@ class MapboxService @Inject constructor() : Mapbox {
     }
 
     private fun addLayerOfPickupIcon(style: Style) {
+        addImageOfPickupIcon(style)
         style.addLayer(SymbolLayer(PICKUP_ICON_LAYER_ID, PICKUP_ICON_SOURCE_ID).apply {
             this.withProperties(
                 PropertyFactory.iconImage(PICKUP_MARKER_IMAGE_ID),
@@ -186,6 +180,7 @@ class MapboxService @Inject constructor() : Mapbox {
     }
 
     private fun addLayerOfPulseCircle(style: Style) {
+        addImageOfPulseCircle(style)
         style.addLayerBelow(SymbolLayer(PULSE_CIRCLE_LAYER_ID, PULSE_CIRCLE_SOURCE_ID).apply {
             this.withProperties(
                 PropertyFactory.iconImage(PULSE_CIRCLE_IMAGE_ID),
@@ -200,6 +195,7 @@ class MapboxService @Inject constructor() : Mapbox {
     }
 
     private fun addLayerOfDropoffIcon(style: Style) {
+        addImageOfDropoffIcon(style)
         style.addLayer(SymbolLayer(DROPOFF_ICON_LAYER_ID, DROPOFF_ICON_SOURCE_ID).apply {
             this.withProperties(
                 PropertyFactory.iconImage(DROPOFF_MARKER_IMAGE_ID),
@@ -210,14 +206,8 @@ class MapboxService @Inject constructor() : Mapbox {
 
     override fun addMapboxLayers(style: Style) {
         addLayerOfRoute(style)
-
-        addImageOfPickupIcon(style)
         addLayerOfPickupIcon(style)
-
-        addImageOfPulseCircle(style)
         addLayerOfPulseCircle(style)
-
-        addImageOfDropoffIcon(style)
         addLayerOfDropoffIcon(style)
     }
 
@@ -240,8 +230,6 @@ class MapboxService @Inject constructor() : Mapbox {
         private const val PULSE_CIRCLE_IMAGE_ID = "pulse-circle-image-id"
 
         private const val DROPOFF_MARKER_IMAGE_ID = "destination-pin-icon-id"
-
-        private const val CAMERA_BOUNDS_LATITUDE_DELTA = 0.04
 
         private const val ROUTE_LINE_COLOR = "#0062FF"
         private const val ROUTE_LINE_WIDTH = 5f

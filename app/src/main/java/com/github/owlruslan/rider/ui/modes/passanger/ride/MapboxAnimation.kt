@@ -14,6 +14,8 @@ object MapboxAnimation {
     private const val PULSE_CIRCLE_MULTIPLIER = 10
     private const val MIN_PROPERTY_VALUE = 0f
     private const val MAX_PROPERTY_VALUE = 1f
+    lateinit var searchMarkerAnimator: ValueAnimator
+    lateinit var cameraIdleListener: MapboxMap.OnCameraIdleListener
 
     private fun createCameraPosition(point: LatLng, zoomValue: Double): CameraPosition =
         CameraPosition.Builder()
@@ -39,28 +41,31 @@ object MapboxAnimation {
         animationTime: Int,
         pulseCircleLayerId: String,
         map: MapboxMap
-    ): () -> Unit {
+    ) {
         animateCameraToPoint(point, zoom, animationTime, map)
 
         // Searching nearby car
-        val listener = {
-            val markerAnimator = ValueAnimator()
-            markerAnimator.setObjectValues(MIN_PROPERTY_VALUE, MAX_PROPERTY_VALUE)
-            markerAnimator.duration = SEARCH_ANIMATION_DURATION
-            markerAnimator.addUpdateListener {
+        cameraIdleListener = MapboxMap.OnCameraIdleListener {
+            searchMarkerAnimator = ValueAnimator()
+            searchMarkerAnimator.setObjectValues(MIN_PROPERTY_VALUE, MAX_PROPERTY_VALUE)
+            searchMarkerAnimator.duration = SEARCH_ANIMATION_DURATION
+            searchMarkerAnimator.addUpdateListener {
 
                 map.style?.getLayer(pulseCircleLayerId)?.setProperties(
                     PropertyFactory.iconSize(PULSE_CIRCLE_MULTIPLIER * it.animatedValue as Float),
                     PropertyFactory.iconOpacity(1 - it.animatedValue as Float)
                 )
             }
-            markerAnimator.repeatCount = ValueAnimator.INFINITE
-            markerAnimator.repeatMode = ValueAnimator.RESTART
-            markerAnimator.start()
+            searchMarkerAnimator.repeatCount = ValueAnimator.INFINITE
+            searchMarkerAnimator.repeatMode = ValueAnimator.RESTART
+            searchMarkerAnimator.start()
         }
 
-        map.addOnCameraIdleListener(listener)
+        map.addOnCameraIdleListener(cameraIdleListener)
+    }
 
-        return listener
+    fun stopAnimateSearch(map: MapboxMap) {
+        map.removeOnCameraIdleListener(cameraIdleListener)
+        searchMarkerAnimator.cancel()
     }
 }

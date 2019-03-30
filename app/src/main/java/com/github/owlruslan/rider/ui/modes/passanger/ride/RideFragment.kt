@@ -95,7 +95,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     override fun showSearchAnimation() {
         showTransitionToDriverRequest()
 
-        val listener = MapboxAnimation.animateSearch(
+        MapboxAnimation.animateSearch(
             PICKUP_POINT, POINT_ZOOM, CAMERA_ANIMATION_TIME, MapboxService.PULSE_CIRCLE_LAYER_ID, mapboxMap
         )
 
@@ -107,7 +107,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
             .subscribe({
 
                 // Stop searching animation
-                mapboxMap.removeOnCameraIdleListener(listener)
+                MapboxAnimation.stopAnimateSearch(mapboxMap)
 
                 // Draw path from car to user
                 mapboxMap.setStyle(MAPBOX_STYLE) { style: Style ->
@@ -182,7 +182,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
 
         private const val MAPBOX_STYLE = Style.MAPBOX_STREETS
 
-        private const val SEARCH_DELAY_IN_SECONDS: Long = 3
+        private const val SEARCH_DELAY_IN_SECONDS: Long = 5
 
         private const val CAMERA_ANIMATION_TIME = 3000
     }
