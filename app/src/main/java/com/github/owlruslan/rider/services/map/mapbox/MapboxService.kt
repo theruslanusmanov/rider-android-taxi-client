@@ -3,6 +3,7 @@ package com.github.owlruslan.rider.services.map.mapbox
 import android.content.Context
 import android.graphics.Color
 import android.widget.Toast
+import androidx.collection.ArrayMap
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.mapbox.api.directions.v5.DirectionsCriteria
@@ -55,9 +56,6 @@ class MapboxService @Inject constructor() : Mapbox {
             .build()
 
     private fun setRouteSource(route: DirectionsRoute, routeId: String, style: Style) {
-        // Retrieve and update the source designated for showing the directions route
-        // Create a LineString with the directions route's geometry and
-        // reset the GeoJSON source for the route LineLayer source
         style.getSourceAs<GeoJsonSource>(routeId)?.setGeoJson(
             FeatureCollection.fromFeature(
                 Feature.fromGeometry(
@@ -75,7 +73,9 @@ class MapboxService @Inject constructor() : Mapbox {
     private fun createRouteLatLngListFromDirectionsRoute(route: DirectionsRoute): ArrayList<LatLng> {
         val routeLatLngList = ArrayList<LatLng>()
         val routeCoordinates = LineString.fromPolyline(route.geometry()!!, Constants.PRECISION_6).coordinates()
-        for (point: Point in routeCoordinates) { routeLatLngList.add(LatLng(point.latitude(), point.longitude())) }
+        for (point: Point in routeCoordinates) {
+            routeLatLngList.add(LatLng(point.latitude(), point.longitude()))
+        }
         return routeLatLngList
     }
 
@@ -94,12 +94,16 @@ class MapboxService @Inject constructor() : Mapbox {
         val bounds = setCameraBoundsWithBottomPadding(
             createRouteLatLngListFromDirectionsRoute(route)
         )
-        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngBounds(
-            bounds, 0, 200, 0, 0)
+        mapboxMap.moveCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                bounds, 0, 200, 0, 0
+            )
         )
     }
 
-    private fun showToast(text: String) { Toast.makeText(context, text, Toast.LENGTH_SHORT).show() }
+    private fun showToast(text: String) {
+        Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+    }
 
     override fun showRoute(style: Style, start: Point, end: Point) {
         client = createDirectionsClient(start, end)
@@ -121,52 +125,34 @@ class MapboxService @Inject constructor() : Mapbox {
         })
     }
 
-    private fun addSourceOfRoute(style: Style, sourceId: String) {
-        style.addSource(GeoJsonSource(sourceId, FeatureCollection.fromFeatures(arrayOf())))
-    }
-
-    private fun addSourceOfPickupIcon(style: Style, point: Point, sourceId: String) {
-        style.addSource(GeoJsonSource(
-            sourceId,
-            FeatureCollection.fromFeatures(
-                arrayOf(Feature.fromGeometry(Point.fromLngLat(point.longitude(), point.latitude())))
+    private fun addSource(style: Style, sourceId: String, point: Point?) {
+        if (point != null)
+            style.addSource(
+                GeoJsonSource(
+                    sourceId,
+                    FeatureCollection.fromFeatures(
+                        arrayOf(Feature.fromGeometry(Point.fromLngLat(point.longitude(), point.latitude())))
+                    )
+                )
             )
-        ))
+        else style.addSource(GeoJsonSource(sourceId, FeatureCollection.fromFeatures(arrayOf())))
     }
 
-    private fun addSourceOfPulseCircle(style: Style, point: Point, sourceId: String) {
-        style.addSource(GeoJsonSource(
-            sourceId,
-            FeatureCollection.fromFeatures(
-                arrayOf(Feature.fromGeometry(Point.fromLngLat(point.longitude(),point.latitude())))
-            )
-        ))
-    }
-
-    private fun addSourceOfDropoffIcon(style: Style, point: Point, sourceId: String) {
-        style.addSource(GeoJsonSource(
-            sourceId,
-            FeatureCollection.fromFeatures(
-                arrayOf(Feature.fromGeometry(Point.fromLngLat(point.longitude(), point.latitude())))
-            )
-        ))
-    }
-
-    private fun addMapboxSource(style: Style, ids: Array<String>, points: Map<String, Point>) {
-        ids.forEach {
-            when (it) {
-                ROUTE_SOURCE_ID -> addSourceOfRoute(style, ROUTE_SOURCE_ID)
-                PICKUP_ICON_SOURCE_ID -> addSourceOfPickupIcon(style, points["start"] as Point, PICKUP_ICON_SOURCE_ID)
-                PULSE_CIRCLE_SOURCE_ID -> addSourceOfPulseCircle(style, points["start"] as Point, PULSE_CIRCLE_SOURCE_ID)
-                DROPOFF_ICON_SOURCE_ID -> addSourceOfDropoffIcon(style, points["end"] as Point, DROPOFF_ICON_SOURCE_ID)
+    override fun addMapboxSources(style: Style, points: ArrayMap<String, Point>) {
+        val sources = arrayOf(
+            Source(ROUTE_SOURCE_ID, null),
+            Source(PICKUP_ICON_SOURCE_ID, points["start"]),
+            Source(PULSE_CIRCLE_SOURCE_ID, points["start"]),
+            Source(DROPOFF_ICON_SOURCE_ID, points["end"])
+        )
+        sources.forEach { source: Source ->
+            when (source.id) {
+                ROUTE_SOURCE_ID -> addSource(style, source.id, source.point)
+                PICKUP_ICON_SOURCE_ID -> addSource(style, source.id, source.point)
+                PULSE_CIRCLE_SOURCE_ID -> addSource(style, source.id, source.point)
+                DROPOFF_ICON_SOURCE_ID -> addSource(style, source.id, source.point)
             }
         }
-    }
-
-    override fun addMapboxSources(style: Style, start: Point, end: Point) {
-        val ids = arrayOf(ROUTE_SOURCE_ID, PICKUP_ICON_SOURCE_ID, PULSE_CIRCLE_SOURCE_ID, DROPOFF_ICON_SOURCE_ID)
-        val points: Map<String, Point> = mapOf(Pair("start", start), Pair("end", end))
-        addMapboxSource(style, ids, points)
     }
 
     private fun addLayerOfRoute(style: Style) {
@@ -215,10 +201,10 @@ class MapboxService @Inject constructor() : Mapbox {
 
     private fun addLayerOfDropoffIcon(style: Style) {
         style.addLayer(SymbolLayer(DROPOFF_ICON_LAYER_ID, DROPOFF_ICON_SOURCE_ID).apply {
-           this.withProperties(
-               PropertyFactory.iconImage(DROPOFF_MARKER_IMAGE_ID),
-               PropertyFactory.iconIgnorePlacement(true)
-           )
+            this.withProperties(
+                PropertyFactory.iconImage(DROPOFF_MARKER_IMAGE_ID),
+                PropertyFactory.iconIgnorePlacement(true)
+            )
         })
     }
 

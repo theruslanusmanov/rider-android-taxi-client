@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.collection.ArrayMap
 import androidx.fragment.app.Fragment
 import androidx.transition.Scene
 import androidx.transition.Slide
@@ -11,6 +12,7 @@ import androidx.transition.TransitionManager
 import com.github.owlruslan.rider.R
 import com.github.owlruslan.rider.di.ActivityScoped
 import com.github.owlruslan.rider.services.map.mapbox.MapboxService
+import com.github.owlruslan.rider.services.map.mapbox.Source
 import com.github.owlruslan.rider.ui.modes.passanger.complete.CompleteFragment
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
 import com.mapbox.geojson.Point
@@ -109,7 +111,10 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
 
                 // Draw path from car to user
                 mapboxMap.setStyle(MAPBOX_STYLE) { style: Style ->
-                    mapboxService.addMapboxSources(style, CAR_POINT, PICKUP_POINT)
+                    val points = ArrayMap<String, Point>()
+                    points["start"] = CAR_POINT
+                    points["end"] = PICKUP_POINT
+                    mapboxService.addMapboxSources(style, points)
                     mapboxService.addMapboxLayers(style)
                     mapboxService.showRoute(style, CAR_POINT, PICKUP_POINT)
 
@@ -133,7 +138,10 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
             this.mapboxService.init(mapboxMap)
 
             mapboxMap.setStyle(MAPBOX_STYLE) { style: Style ->
-                mapboxService.addMapboxSources(style, PICKUP_POINT, DROPOFF_POINT)
+                val points = ArrayMap<String, Point>()
+                points["start"] = PICKUP_POINT
+                points["end"] = DROPOFF_POINT
+                mapboxService.addMapboxSources(style, points)
                 mapboxService.addMapboxLayers(style)
                 mapboxService.showRoute(style, PICKUP_POINT, DROPOFF_POINT)
             }
