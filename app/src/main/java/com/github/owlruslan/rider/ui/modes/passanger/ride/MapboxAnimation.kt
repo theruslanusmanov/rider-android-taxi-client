@@ -10,6 +10,11 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 
 object MapboxAnimation {
 
+    private const val SEARCH_ANIMATION_DURATION: Long = 1000
+    private const val PULSE_CIRCLE_MULTIPLIER = 10
+    private const val MIN_PROPERTY_VALUE = 0f
+    private const val MAX_PROPERTY_VALUE = 1f
+
     private fun createCameraPosition(point: LatLng, zoomValue: Double): CameraPosition =
         CameraPosition.Builder()
             .target(point)
@@ -35,18 +40,17 @@ object MapboxAnimation {
         pulseCircleLayerId: String,
         map: MapboxMap
     ): () -> Unit {
-        // Set camera position to pickup point
         animateCameraToPoint(point, zoom, animationTime, map)
 
-        // When searching nearby car
+        // Searching nearby car
         val listener = {
             val markerAnimator = ValueAnimator()
-            markerAnimator.setObjectValues(0f, 1f)
-            markerAnimator.duration = 1000
+            markerAnimator.setObjectValues(MIN_PROPERTY_VALUE, MAX_PROPERTY_VALUE)
+            markerAnimator.duration = SEARCH_ANIMATION_DURATION
             markerAnimator.addUpdateListener {
 
                 map.style?.getLayer(pulseCircleLayerId)?.setProperties(
-                    PropertyFactory.iconSize(10 * it.animatedValue as Float),
+                    PropertyFactory.iconSize(PULSE_CIRCLE_MULTIPLIER * it.animatedValue as Float),
                     PropertyFactory.iconOpacity(1 - it.animatedValue as Float)
                 )
             }
