@@ -39,7 +39,7 @@ class MapboxService @Inject constructor() : Mapbox {
     lateinit var context: Context
 
     private lateinit var mapboxMap: MapboxMap
-    private lateinit var currentRoute: DirectionsRoute
+    lateinit var currentRoute: DirectionsRoute
     private lateinit var client: MapboxDirections
 
     override fun init(mapboxMap: MapboxMap) {
@@ -118,7 +118,7 @@ class MapboxService @Inject constructor() : Mapbox {
         })
     }
 
-    private fun addSource(style: Style, sourceId: String, point: Point?) {
+    public fun addSource(style: Style, sourceId: String, point: Point?) {
         if (point != null)
             style.addSource(
                 GeoJsonSource(
@@ -136,7 +136,8 @@ class MapboxService @Inject constructor() : Mapbox {
             Source(ROUTE_SOURCE_ID, null),
             Source(PICKUP_ICON_SOURCE_ID, points["start"]),
             Source(PULSE_CIRCLE_SOURCE_ID, points["start"]),
-            Source(DROPOFF_ICON_SOURCE_ID, points["end"])
+            Source(DROPOFF_ICON_SOURCE_ID, points["end"]) ,
+            Source(CAR_ICON_SOURCE_ID, null)
         )
         sources.forEach { source: Source ->
             when (source.id) {
@@ -144,6 +145,7 @@ class MapboxService @Inject constructor() : Mapbox {
                 PICKUP_ICON_SOURCE_ID -> addSource(style, source.id, source.point)
                 PULSE_CIRCLE_SOURCE_ID -> addSource(style, source.id, source.point)
                 DROPOFF_ICON_SOURCE_ID -> addSource(style, source.id, source.point)
+                CAR_ICON_SOURCE_ID -> addSource(style, source.id, source.point)
             }
         }
     }
@@ -204,11 +206,27 @@ class MapboxService @Inject constructor() : Mapbox {
         })
     }
 
+    private fun addImageOfCarIcon(style: Style) {
+        val drawable = context.resources.getDrawable(R.drawable.ic_car, null)
+        style.addImage(CAR_IMAGE_ID, BitmapUtils.getBitmapFromDrawable(drawable)!!)
+    }
+
+    public fun addLayerOfCarIcon(style: Style) {
+        addImageOfDropoffIcon(style)
+        style.addLayer(SymbolLayer(CAR_ICON_LAYER_ID, CAR_ICON_SOURCE_ID).apply {
+            this.withProperties(
+                PropertyFactory.iconImage(CAR_IMAGE_ID),
+                PropertyFactory.iconIgnorePlacement(true)
+            )
+        })
+    }
+
     override fun addMapboxLayers(style: Style) {
         addLayerOfRoute(style)
         addLayerOfPickupIcon(style)
         addLayerOfPulseCircle(style)
         addLayerOfDropoffIcon(style)
+        addLayerOfCarIcon(style)
     }
 
     override fun cancelCall() {
@@ -221,15 +239,17 @@ class MapboxService @Inject constructor() : Mapbox {
         private const val PICKUP_ICON_SOURCE_ID = "pickup-icon-source-id"
         private const val PULSE_CIRCLE_SOURCE_ID = "pulse-circle-source-id"
         private const val DROPOFF_ICON_SOURCE_ID = "dropoff-icon-source-id"
+        const val CAR_ICON_SOURCE_ID = "car-icon-source-id"
 
         const val PICKUP_ICON_LAYER_ID = "pickup-icon-layer-id"
         const val PULSE_CIRCLE_LAYER_ID = "pulse-circle-layer-id"
         const val DROPOFF_ICON_LAYER_ID = "dropoff-icon-layer-id"
+        const val CAR_ICON_LAYER_ID = "car-icon-layer-id"
 
-        private const val PICKUP_MARKER_IMAGE_ID = "pickup-marker-icon-image-id"
+        private const val PICKUP_MARKER_IMAGE_ID = "pickup-marker-image-id"
         private const val PULSE_CIRCLE_IMAGE_ID = "pulse-circle-image-id"
-
-        private const val DROPOFF_MARKER_IMAGE_ID = "destination-pin-icon-id"
+        private const val DROPOFF_MARKER_IMAGE_ID = "dropoff-marker-image-id"
+        private const val CAR_IMAGE_ID = "car-image-id"
 
         private const val ROUTE_LINE_COLOR = "#0062FF"
         private const val ROUTE_LINE_WIDTH = 5f

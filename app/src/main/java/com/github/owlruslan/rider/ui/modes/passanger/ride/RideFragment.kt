@@ -118,7 +118,7 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                     mapboxService.addMapboxLayers(style)
                     mapboxService.showRoute(style, CAR_POINT, PICKUP_POINT)
 
-                    animateDrive()
+                    animateDrive(style)
                 }
 
             }, {}).isDisposed
@@ -148,8 +148,8 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
         }
     }
 
-    private fun animateDrive() {
-        // TODO: animate
+    private fun animateDrive(style: Style) {
+        MapboxAnimation.animateCarMoving(style, mapboxService)
     }
 
     override fun showFragment(fragment: Fragment) {
@@ -168,17 +168,17 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
     companion object {
         private const val POINT_ZOOM = 16.0
 
-        private const val PICKUP_LATITUDE = 55.789607
-        private const val PICKUP_LONGITUDE = 49.124790
-        private val PICKUP_POINT = Point.fromLngLat(PICKUP_LONGITUDE, PICKUP_LATITUDE)
+        const val PICKUP_LATITUDE = 55.789607
+        const val PICKUP_LONGITUDE = 49.124790
+        val PICKUP_POINT = Point.fromLngLat(PICKUP_LONGITUDE, PICKUP_LATITUDE)
 
-        private const val CAR_LATITUDE = 55.789049
-        private const val CAR_LONGITUDE = 49.124175
-        private val CAR_POINT = Point.fromLngLat(CAR_LONGITUDE, CAR_LATITUDE)
+        const val CAR_LATITUDE = 55.789049
+        const val CAR_LONGITUDE = 49.124175
+        val CAR_POINT = Point.fromLngLat(CAR_LONGITUDE, CAR_LATITUDE)
 
-        private const val DROPOFF_LATITUDE = 55.796164
-        private const val DROPOFF_LONGITUDE = 49.125764
-        private val DROPOFF_POINT = Point.fromLngLat(DROPOFF_LONGITUDE, DROPOFF_LATITUDE)
+        const val DROPOFF_LATITUDE = 55.796164
+        const val DROPOFF_LONGITUDE = 49.125764
+        val DROPOFF_POINT = Point.fromLngLat(DROPOFF_LONGITUDE, DROPOFF_LATITUDE)
 
         private const val MAPBOX_STYLE = Style.MAPBOX_STREETS
 
