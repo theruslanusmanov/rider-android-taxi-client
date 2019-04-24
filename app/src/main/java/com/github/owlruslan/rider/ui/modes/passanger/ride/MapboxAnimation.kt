@@ -18,12 +18,16 @@ import android.view.animation.LinearInterpolator
 import com.github.owlruslan.rider.services.map.mapbox.MapboxService
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.Source
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
 
 object MapboxAnimation {
+
+    public lateinit var carAnimationEndBehaviorSubject: BehaviorSubject<Any>
 
     private const val SEARCH_ANIMATION_DURATION: Long = 1000
     private const val CAR_ANIMATION_DURATION: Long = 300
@@ -90,7 +94,10 @@ object MapboxAnimation {
     }
 
     fun animateCarMoving(style: Style, mapboxService: MapboxService) {
-        val coordinatesList = LineString.fromPolyline(mapboxService.currentRoute.geometry()!!, Constants.PRECISION_6)
+        this.carAnimationEndBehaviorSubject = BehaviorSubject.create<Any>()
+        this.carAnimationEndBehaviorSubject.onNext(true)
+
+        /*val coordinatesList = LineString.fromPolyline(mapboxService.currentRoute.geometry()!!, Constants.PRECISION_6)
             .coordinates()
         var count = 0
         val observable: Observable<Point> = Observable.fromIterable(coordinatesList)
@@ -98,6 +105,7 @@ object MapboxAnimation {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({point: Point? ->
+                Log.d("RIDEX", "ANIMATION" )
                 if (coordinatesList.size - 1 > count) {
                     var nextLocation = coordinatesList.get(count + 1)
 
@@ -127,7 +135,7 @@ object MapboxAnimation {
 
                         count++
                     }
-                }
+                }*/
 /*
             if (point != null) {
                 Log.d("F", "F $point")
@@ -146,9 +154,10 @@ object MapboxAnimation {
                      )
                  }
                 carIconAnimator.start()
-            }*/
+            }
 
         }, {}).isDisposed
+        */
     }
 
     private val latLngEvaluator = object : TypeEvaluator<LatLng> {

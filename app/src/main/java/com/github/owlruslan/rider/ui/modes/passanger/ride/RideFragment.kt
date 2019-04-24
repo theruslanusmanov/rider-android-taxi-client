@@ -1,6 +1,7 @@
 package com.github.owlruslan.rider.ui.modes.passanger.ride
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,6 +120,16 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                     mapboxService.showRoute(style, CAR_POINT, PICKUP_POINT)
 
                     animateDrive(style)
+
+                    // On animation ended.
+                    MapboxAnimation.carAnimationEndBehaviorSubject
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({
+
+                            presenter.goToFragment(completeFragmentProvider.get())
+
+                        }, {}).isDisposed
                 }
 
             }, {}).isDisposed
