@@ -21,7 +21,7 @@ class CompleteFragment @Inject constructor() : DaggerFragment(), CompleteContrac
     }
 
     override fun onDestroyView() {
-        presenter.dropView();  // prevent leaking activity in
+        presenter.dropView()  // prevent leaking activity in
         super.onDestroyView()
     }
 

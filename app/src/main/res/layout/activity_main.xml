@@ -21,8 +21,18 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/activity_main_drawer" app:itemTextColor="@android:color/black"
+            app:menu="@menu/activity_main_drawer"
+            app:itemTextColor="@android:color/black"
             app:itemIconTint="@android:color/black"
-            app:itemTextAppearance="@style/TextAppearance.AppCompat"/>
+            app:itemTextAppearance="@style/TextAppearance.AppCompat">
+
+        <Switch
+                android:text="Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:id="@+id/switch1"/>
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
