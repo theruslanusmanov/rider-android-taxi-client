@@ -26,12 +26,16 @@
             app:itemIconTint="@android:color/black"
             app:itemTextAppearance="@style/TextAppearance.AppCompat">
 
-        <Switch
-                android:text="Switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:id="@+id/switch1"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_gravity="bottom" android:paddingLeft="24dp">
+            <Switch
+                    android:text="Drive Mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/switch1" android:textColor="@color/colorPrimary"/>
+        </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>
 
