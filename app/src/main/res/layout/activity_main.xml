@@ -34,7 +34,7 @@
                     android:text="Drive Mode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/switch1" android:textColor="@color/colorPrimary"/>
+                    android:id="@+id/driveModeSwitch" android:textColor="@color/colorPrimary"/>
         </LinearLayout>
 
     </com.google.android.material.navigation.NavigationView>

@@ -43,10 +43,22 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
             .commit()*/
-        val fragment = completeFragmentProvider!!.get()
+        var fragment = completeFragmentProvider!!.get()
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, fragment)
             .commit()
+
+        driveModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            /*if (isChecked) {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.content_frame, searchFragmentProvider!!.get())
+                    .commit()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.content_frame, completeFragmentProvider!!.get())
+                    .commit()
+            }*/
+        }
 
     }
 
