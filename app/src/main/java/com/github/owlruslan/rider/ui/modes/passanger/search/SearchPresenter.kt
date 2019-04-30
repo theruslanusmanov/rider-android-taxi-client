@@ -76,6 +76,6 @@ class SearchPresenter @Inject constructor() : SearchContract.Presenter {
     }
 
     companion object {
-        const val TAG = "SearchPresenter"
+        const val TAG = "SearchDriverPresenter"
     }
 }

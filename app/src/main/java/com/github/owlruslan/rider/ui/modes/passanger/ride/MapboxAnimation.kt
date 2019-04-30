@@ -117,7 +117,7 @@ object MapboxAnimation {
                     if (latLngEvaluator != null) {
                         carIconAnimator = ObjectAnimator
                             .ofObject(latLngEvaluator,
-                                if (count == 0) LatLng(RideFragment.CAR_LATITUDE, RideFragment.CAR_LONGITUDE)
+                                if (count == 0) LatLng(RideDriverFragment.CAR_LATITUDE, RideDriverFragment.CAR_LONGITUDE)
                                 else carIconCurrentLocation, LatLng(nextLocation.latitude(), nextLocation.longitude()))
                             .setDuration(CAR_ANIMATION_DURATION)
                         carIconAnimator.interpolator = LinearInterpolator()

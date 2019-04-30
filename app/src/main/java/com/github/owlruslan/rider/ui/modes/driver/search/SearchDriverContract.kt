@@ -4,7 +4,7 @@ import com.github.owlruslan.rider.ui.base.BasePresenter
 import com.github.owlruslan.rider.ui.base.BaseView
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchContract
 
-interface SearchContract {
+interface SearchDriverContract {
 
     interface  View : BaseView<SearchContract.Presenter> {}
 

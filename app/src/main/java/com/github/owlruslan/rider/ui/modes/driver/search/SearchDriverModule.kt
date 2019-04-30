@@ -7,13 +7,13 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class SearchModule {
+abstract class SearchDriverModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun searchFragment(): SearchFragment
+    abstract fun searchFragment(): SearchDriverFragment
 
     @Binds
     @ActivityScoped
-    abstract fun searchPresenter(presenter: SearchPresenter): SearchContract.Presenter
+    abstract fun searchPresenter(driverPresenter: SearchDriverPresenter): SearchDriverContract.Presenter
 }

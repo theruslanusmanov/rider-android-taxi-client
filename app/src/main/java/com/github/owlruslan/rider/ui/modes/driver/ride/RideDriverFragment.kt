@@ -1,4 +1,4 @@
-package com.github.owlruslan.rider.ui.modes.driver.search
+package com.github.owlruslan.rider.ui.modes.driver.ride
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,10 +13,10 @@ import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 @ActivityScoped
-class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.View, OnMapReadyCallback {
+class RideDriverFragment @Inject constructor() : DaggerFragment(), RideDriverContract.View, OnMapReadyCallback {
 
     @Inject
-    lateinit var presenter: SearchContract.Presenter
+    lateinit var presenter: RideDriverContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class SearchFragment @Inject constructor() : DaggerFragment(), SearchContract.Vi
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_driver_search, container, false)
+        return inflater.inflate(R.layout.fragment_driver_ride, container, false)
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {

@@ -1,6 +1,9 @@
 package com.github.owlruslan.rider.di
 
 import com.github.owlruslan.rider.ui.MainActivity
+import com.github.owlruslan.rider.ui.modes.driver.complete.CompleteDriverModule
+import com.github.owlruslan.rider.ui.modes.driver.ride.RideDriverModule
+import com.github.owlruslan.rider.ui.modes.driver.search.SearchDriverModule
 import com.github.owlruslan.rider.ui.modes.passanger.complete.CompleteModule
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchModule
 import com.github.owlruslan.rider.ui.modes.passanger.ride.RideModule
@@ -22,7 +25,10 @@ abstract class ActivityBindingModule {
         modules = [
             SearchModule::class,
             RideModule::class,
-            CompleteModule::class
+            CompleteModule::class,
+            SearchDriverModule::class,
+            RideDriverModule::class,
+            CompleteDriverModule::class
         ]
     )
     abstract fun mainActivity(): MainActivity

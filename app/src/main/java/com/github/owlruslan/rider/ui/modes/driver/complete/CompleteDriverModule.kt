@@ -7,13 +7,13 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class CompleteModule {
+abstract class CompleteDriverModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract fun completeFragment(): CompleteFragment
+    abstract fun completeFragment(): CompleteDriverFragment
 
     @Binds
     @ActivityScoped
-    abstract fun completePresenter(presenter: CompletePresenter): CompleteContract.Presenter
+    abstract fun completePresenter(driverPresenter: CompleteDriverPresenter): CompleteDriverContract.Presenter
 }

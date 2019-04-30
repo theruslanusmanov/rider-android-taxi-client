@@ -8,6 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import com.github.owlruslan.rider.R
+import com.github.owlruslan.rider.ui.modes.driver.complete.CompleteDriverFragment
+import com.github.owlruslan.rider.ui.modes.driver.ride.RideDriverFragment
+import com.github.owlruslan.rider.ui.modes.driver.search.SearchDriverFragment
 import com.github.owlruslan.rider.ui.modes.passanger.complete.CompleteFragment
 import com.github.owlruslan.rider.ui.modes.passanger.ride.RideFragment
 import com.github.owlruslan.rider.ui.modes.passanger.search.SearchFragment
@@ -18,9 +21,15 @@ import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    // PASSANGER
     @set:Inject var searchFragmentProvider: Lazy<SearchFragment>? = null
     @set:Inject var rideFragmentProvider: Lazy<RideFragment>? = null
     @set:Inject var completeFragmentProvider: Lazy<CompleteFragment>? = null
+
+    // DRIVER
+    @set:Inject var searchDriverDriverFragmentProvider: Lazy<SearchDriverFragment>? = null
+    @set:Inject var rideDriverDriverFragmentProvider: Lazy<RideDriverFragment>? = null
+    @set:Inject var completeDriverDriverFragmentProvider: Lazy<CompleteDriverFragment>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +43,22 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        // Add SearchFragment to activity
+        // Add SearchDriverFragment to activity
+        // PASSANGER
+        /*
+        var fragment = completeFragmentProvider!!.get()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame, mapFragment)
+            .commit()*/
+        /*val mapFragment = rideFragmentProvider!!.get()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame, mapFragment)
+            .commit()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame, fragment)
+            .commit()*/
+
+        // DRIVER
         /*val mapFragment = searchFragmentProvider!!.get()
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
@@ -43,9 +67,8 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
             .commit()*/
-        var fragment = completeFragmentProvider!!.get()
         supportFragmentManager.beginTransaction()
-            .add(R.id.content_frame, fragment)
+            .add(R.id.content_frame, searchDriverDriverFragmentProvider!!.get())
             .commit()
 
         driveModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->

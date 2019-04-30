@@ -13,10 +13,10 @@ import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 @ActivityScoped
-class CompleteFragment @Inject constructor() : DaggerFragment(), CompleteContract.View, OnMapReadyCallback {
+class CompleteDriverFragment @Inject constructor() : DaggerFragment(), CompleteDriverContract.View, OnMapReadyCallback {
 
     @Inject
-    lateinit var presenter: CompleteContract.Presenter
+    lateinit var presenter: CompleteDriverContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

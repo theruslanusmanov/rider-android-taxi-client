@@ -6,7 +6,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 
-class SearchPresenterTest {
+class SearchDriverPresenterTest {
 
     @Before
     fun setUp() {
