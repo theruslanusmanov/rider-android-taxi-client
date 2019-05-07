@@ -2,7 +2,6 @@ package com.github.owlruslan.rider.ui.modes.passanger.ride
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.core.constants.Constants
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
@@ -11,23 +10,18 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import io.reactivex.Observable
 import android.animation.TypeEvaluator
+import android.os.Handler
 import android.util.Log
 import android.view.animation.LinearInterpolator
 import com.github.owlruslan.rider.services.map.mapbox.MapboxService
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.sources.Source
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import java.util.concurrent.TimeUnit
 
 
 object MapboxAnimation {
 
-    public lateinit var carAnimationEndBehaviorSubject: BehaviorSubject<Any>
+    lateinit var carAnimationEndBehaviorSubject: BehaviorSubject<Any>
 
     private const val SEARCH_ANIMATION_DURATION: Long = 1000
     private const val CAR_ANIMATION_DURATION: Long = 300
@@ -38,7 +32,7 @@ object MapboxAnimation {
     lateinit var searchMarkerAnimator: ValueAnimator
     lateinit var cameraIdleListener: MapboxMap.OnCameraIdleListener
 
-    private lateinit var carIconAnimator: ValueAnimator
+    private var carIconAnimator: ValueAnimator? = null
     private var carIconCurrentLocation: LatLng? = null
 
     private fun createCameraPosition(point: LatLng, zoomValue: Double): CameraPosition =
@@ -97,6 +91,58 @@ object MapboxAnimation {
         this.carAnimationEndBehaviorSubject = BehaviorSubject.create<Any>()
         this.carAnimationEndBehaviorSubject.onNext(true)
 
+
+        val dotGeoJsonSource = mapboxService.addSource(
+            style,
+            MapboxService.CAR_ICON_SOURCE_ID,
+            Point.fromLngLat(
+                RideFragment.CAR_LATITUDE, RideFragment.CAR_LONGITUDE
+            )
+        )
+
+        val coordinatesList = LineString.fromPolyline(mapboxService.currentRoute.geometry()!!, Constants.PRECISION_6)
+            .coordinates()
+        var count = 0
+        val handler = Handler();
+        val runnable = object : Runnable {
+            override fun run() {
+                if (coordinatesList.size - 1 > count) {
+                    Log.d("RIDEX", "ANIMATION " + coordinatesList.size )
+                    var nextLocation = coordinatesList[count]
+                    val carIcAnimator = carIconAnimator
+                    if (carIcAnimator != null) {
+                        if (carIcAnimator.isStarted) {
+                            carIconCurrentLocation = carIcAnimator.animatedValue as LatLng
+                            carIcAnimator.cancel()
+                        }
+                    }
+
+                    if (carIcAnimator != null && latLngEvaluator != null) {
+                        carIconAnimator = ObjectAnimator
+                            .ofObject(
+                                latLngEvaluator,
+                                if (count == 0) LatLng(RideFragment.CAR_LATITUDE, RideFragment.CAR_LONGITUDE)
+                                else carIconCurrentLocation, LatLng(nextLocation.latitude(), nextLocation.longitude())
+                            )
+                            .setDuration(CAR_ANIMATION_DURATION)
+                        carIcAnimator.interpolator = LinearInterpolator()
+                        carIcAnimator.addUpdateListener {
+                            val animatedPosition = it.animatedValue as LatLng
+                            // TODO
+
+                        }
+                        carIcAnimator.start()
+
+                        count++
+                    }
+                }
+
+                handler.postDelayed(this, 300)
+            }
+        }
+        handler.post(runnable);
+
+
         /*val coordinatesList = LineString.fromPolyline(mapboxService.currentRoute.geometry()!!, Constants.PRECISION_6)
             .coordinates()
         var count = 0
@@ -105,48 +151,51 @@ object MapboxAnimation {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({point: Point? ->
-                Log.d("RIDEX", "ANIMATION" )
-                if (coordinatesList.size - 1 > count) {
-                    var nextLocation = coordinatesList.get(count + 1)
 
-                    if (carIconAnimator != null && carIconAnimator.isStarted) {
+                if (coordinatesList.size - 1 > count) {
+                    Log.d("RIDEX", "ANIMATION " + coordinatesList.size )
+                    var nextLocation = coordinatesList[count]
+
+                    if (carIconAnimator.isStarted) {
                         carIconCurrentLocation = carIconAnimator.animatedValue as LatLng
                         carIconAnimator.cancel()
                     }
 
-                    if (latLngEvaluator != null) {
-                        carIconAnimator = ObjectAnimator
-                            .ofObject(latLngEvaluator,
-                                if (count == 0) LatLng(RideDriverFragment.CAR_LATITUDE, RideDriverFragment.CAR_LONGITUDE)
-                                else carIconCurrentLocation, LatLng(nextLocation.latitude(), nextLocation.longitude()))
-                            .setDuration(CAR_ANIMATION_DURATION)
-                        carIconAnimator.interpolator = LinearInterpolator()
-                        carIconAnimator.addUpdateListener {
-                            val animatedPosition = it.animatedValue as LatLng
-                            mapboxService.addSource(
-                                style,
-                                MapboxService.CAR_ICON_SOURCE_ID,
-                                Point.fromLngLat(
-                                    animatedPosition.longitude, animatedPosition.latitude
-                                )
+                    carIconAnimator = ObjectAnimator
+                        .ofObject(latLngEvaluator,
+                            if (count == 0) LatLng(RideFragment.CAR_LATITUDE, RideFragment.CAR_LONGITUDE)
+                            else carIconCurrentLocation, LatLng(nextLocation.latitude(), nextLocation.longitude()))
+                        .setDuration(CAR_ANIMATION_DURATION)
+                    carIconAnimator.interpolator = LinearInterpolator()
+                    carIconAnimator.addUpdateListener {
+                        val animatedPosition = it.animatedValue as LatLng
+                        mapboxService.addSource(
+                            style,
+                            MapboxService.CAR_ICON_SOURCE_ID,
+                            Point.fromLngLat(
+                                animatedPosition.longitude, animatedPosition.latitude
                             )
-                        }
-                        carIconAnimator.start()
-
-                        count++
+                        )
                     }
-                }*/
-/*
-            if (point != null) {
-                Log.d("F", "F $point")
-                carIconAnimator = ObjectAnimator
-                    .ofObject(latLngEvaluator, LatLng(point.latitude(), point.longitude()), LatLng(point.latitude(), point.longitude()))
-                    .setDuration(CAR_ANIMATION_DURATION)
-                carIconAnimator.interpolator = LinearInterpolator()
-                carIconAnimator.addUpdateListener {
-                     val animatedPosition = it.animatedValue as LatLng
-                     mapboxService.addSource(
-                         style,
+                    carIconAnimator.start()
+
+                    count++
+                }
+
+               if (point != null) {
+                    Log.d("F", "F $point")
+                    carIconAnimator = ObjectAnimator
+                        .ofObject(
+                            latLngEvaluator,
+                            LatLng(point.latitude(), point.longitude()),
+                            LatLng(point.latitude(), point.longitude())
+                        )
+                        .setDuration(CAR_ANIMATION_DURATION)
+                    carIconAnimator.interpolator = LinearInterpolator()
+                    carIconAnimator.addUpdateListener {
+                        val animatedPosition = it.animatedValue as LatLng
+                        mapboxService.addSource(
+                            style,
                          MapboxService.CAR_ICON_SOURCE_ID,
                          Point.fromLngLat(
                              animatedPosition.longitude, animatedPosition.latitude
@@ -156,11 +205,11 @@ object MapboxAnimation {
                 carIconAnimator.start()
             }
 
-        }, {}).isDisposed
-        */
+        }, {}).isDisposed*/
+
     }
 
-    private val latLngEvaluator = object : TypeEvaluator<LatLng> {
+    val latLngEvaluator = object : TypeEvaluator<LatLng> {
 
         private val latLng = LatLng()
 

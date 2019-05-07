@@ -122,14 +122,14 @@ class RideFragment @Inject constructor() : DaggerFragment(), RideContract.View {
                     animateDrive(style)
 
                     // On animation ended.
-                    MapboxAnimation.carAnimationEndBehaviorSubject
+                    /*MapboxAnimation.carAnimationEndBehaviorSubject
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
                         .subscribe({
 
                             presenter.goToFragment(completeFragmentProvider.get())
 
-                        }, {}).isDisposed
+                        }, {}).isDisposed*/
                 }
 
             }, {}).isDisposed

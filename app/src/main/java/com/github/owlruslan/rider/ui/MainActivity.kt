@@ -50,10 +50,10 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
             .commit()*/
-        /*val mapFragment = rideFragmentProvider!!.get()
         supportFragmentManager.beginTransaction()
-            .add(R.id.content_frame, mapFragment)
+            .add(R.id.content_frame, rideFragmentProvider!!.get())
             .commit()
+        /*
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, fragment)
             .commit()*/
@@ -67,9 +67,9 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
         supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, mapFragment)
             .commit()*/
-        supportFragmentManager.beginTransaction()
+        /*supportFragmentManager.beginTransaction()
             .add(R.id.content_frame, searchDriverDriverFragmentProvider!!.get())
-            .commit()
+            .commit()*/
 
         driveModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             /*if (isChecked) {
