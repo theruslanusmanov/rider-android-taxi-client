@@ -1,6 +1,6 @@
 # Rider
 ![Icon](https://raw.githubusercontent.com/owlruslan/rider-android-taxi-client/master/icon.png "Icon")
-###### Work in progress
+###### Work in progress in next repository [Rider - mobile taxi client](https://github.com/nonameengineer/rider-mobile-taxi-client)
 ### Search fragment
 ![Page one](https://raw.githubusercontent.com/owlruslan/rider-android-taxi-client/master/screenshots/1.png "Search fragment")
 ### Search bottom sheet expanded
